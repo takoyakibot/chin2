@@ -30,3 +30,18 @@ h1 {
   max-width: 100%;
   margin-bottom: 10px;
 }
+
+/* 画像選択ボタンのスタイル */
+.image-select-button {
+  display: flex;
+  align-items: center;
+}
+
+.image-select-button input[type="file"] {
+  margin-right: 10px;
+}
+
+.image-select-button span {
+  font-size: 14px;
+  color: #555;
+}
