@@ -3,6 +3,7 @@ import './style.css'; // スタイルシートをインポート
 
 const CreateQuiz = () => {
   const [selectedImage, setSelectedImage] = useState(null);
+  const [rectangles, setRectangles] = useState([]);
   const [showRectangle, setShowRectangle] = useState(false);
   const [rectanglePosition, setRectanglePosition] = useState({ x: 0, y: 0 });
 
@@ -37,6 +38,12 @@ const CreateQuiz = () => {
     setShowRectangle(true);
   };
 
+  const handleAddRectangle = () => {
+    if (rectangles.length < 2) {
+      setRectangles([...rectangles, rectanglePosition]);
+    }
+  };
+
   return (
     <div className="container">
       <h1>クイズ作成</h1>
@@ -45,12 +52,13 @@ const CreateQuiz = () => {
         {selectedImage && (
           <div style={{ position: 'relative' }}>
             <img src={selectedImage} alt="Selected" onClick={handleImageClick} />
-            {showRectangle && (
+            {rectangles.map((rect, index) => (
               <div
+                key={index}
                 className="rectangle"
-                style={{ top: `${rectanglePosition.y}px`, left: `${rectanglePosition.x}px` }}
+                style={{ top: `${rect.y}px`, left: `${rect.x}px` }}
               ></div>
-            )}
+            ))}
           </div>
         )}
         {/* 画像選択ボタン */}
@@ -60,6 +68,8 @@ const CreateQuiz = () => {
             <input type="file" id="filename" onChange={handleImageSelect} accept="image/*" />
           </label>
         </div>
+        {/* フセン追加ボタン */}
+        <button onClick={handleAddRectangle}>フセンを追加</button>
       </div>
     </div>
   );
