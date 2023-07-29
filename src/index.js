@@ -2,6 +2,8 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import './style.css';
 import App from './App';
+import 'bootstrap/dist/css/bootstrap.min.css'; // BootstrapのCSSをインポート
+import 'bootstrap/dist/js/bootstrap.min.js'; // BootstrapのJavaScriptをインポート
 import reportWebVitals from './reportWebVitals';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));

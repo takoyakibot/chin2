@@ -39,10 +39,8 @@ const CreateQuiz = () => {
   };
 
   const handleAddRectangle = () => {
-    if (rectangles.length < 2) {
       setRectangles([...rectangles, rectanglePosition]);
       setShowRectangle(false); // 仮フセンを追加したら非表示にする
-    }
   };
 
   const handleRemoveRectangle = (index) => {
@@ -52,76 +50,68 @@ const CreateQuiz = () => {
 
   return (
     <div className="container">
-      <h1>クイズ作成</h1>
-      <div className="image-select">
-        {/* 画像選択フィールドの画像表示領域 */}
-        {selectedImage && (
-          <div style={{ position: 'relative' }}>
-            <img src={selectedImage} alt="Selected" onClick={handleImageClick} />
-            {showRectangle && (
-              <div
-                className="rectangle" // 仮フセンのスタイル
-                style={{ top: `${rectanglePosition.y}px`, left: `${rectanglePosition.x}px`, opacity: 0.5 }}
-              ></div>
-            )}
-            {rectangles.map((rect, index) => (
-              <div
-                key={index}
-                className="rectangle"
-                style={{ top: `${rect.y}px`, left: `${rect.x}px` }}
-              ></div>
-            ))}
-          </div>
-        )}
-        {/* 画像選択ボタン */}
-        <div className="image-select-button">
-          <label htmlFor="filename" className="browse_btn">
-            画像を選択
+      <h1 className="mt-4 mb-4">クイズ作成</h1>
+      <div className="row">
+        <div className="col-md-6 mb-4">
+          {/* 画像選択フィールドの画像表示領域 */}
+          {selectedImage && (
+            <div style={{ position: 'relative' }}>
+              <img src={selectedImage} alt="Selected" onClick={handleImageClick} className="img-fluid" />
+              {showRectangle && (
+                <div
+                  className="rectangle" // 仮フセンのスタイル
+                  style={{ top: `${rectanglePosition.y}px`, left: `${rectanglePosition.x}px`, opacity: 0.5 }}
+                ></div>
+              )}
+              {rectangles.map((rect, index) => (
+                <div
+                  key={index}
+                  className="rectangle"
+                  style={{ top: `${rect.y}px`, left: `${rect.x}px` }}
+                ></div>
+              ))}
+            </div>
+          )}
+          {/* 画像選択ボタン */}
+          <div className="image-select-button">
+            <label htmlFor="filename" className="browse_btn">
+              画像を選択
             <input type="file" id="filename" onChange={handleImageSelect} accept="image/*" />
-          </label>
+            </label>
+          </div>
+          {/* フセン追加ボタン */}
+          <button disabled={!showRectangle} onClick={handleAddRectangle} className="btn btn-primary">
+            フセンを追加
+          </button>
         </div>
-        {/* フセン追加ボタン */}
-        <button disabled={!showRectangle} onClick={handleAddRectangle}>
-          フセンを追加
-        </button>
-      </div>
-      {/* クイズ一覧フィールド */}
-      <div className="quiz-list">
-        <h2>クイズ一覧</h2>
-        <table>
-          <thead>
-            <tr>
-              <th>クイズ番号</th>
-              <th>フセン座標</th>
-              <th>クイズの答え</th>
-              <th>削除</th>
-              <th>編集</th>
-              <th>確定</th>
-            </tr>
-          </thead>
-          <tbody>
-            {rectangles.map((rect, index) => (
-              <tr key={index}>
-                <td>フセン {index + 1}</td>
-                <td>X: {rect.x}, Y: {rect.y}</td>
-                <td>クイズの答え</td>
-                <td>
-                  <button onClick={() => handleRemoveRectangle(index)}>削除</button>
-                </td>
-                <td>
-                  {/* <button onClick={() => handleFusenMouseDown(index)} disabled={isDragging}>
-                    編集
-                  </button> */}
-                </td>
-                <td>
-                  {/* {quiz.editing && (
-                    <button onClick={() => handleConfirmFusen(index)}>確定</button>
-                  )} */}
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+        <div className="col-md-6">
+          {/* クイズ一覧フィールド */}
+          <div className="quiz-list">
+            <h2>クイズ一覧</h2>
+            <table className="table table-bordered">
+              <thead>
+                <tr>
+                  <th>クイズ番号</th>
+                  <th>フセン座標</th>
+                  <th>クイズの答え</th>
+                  <th>削除</th>
+                </tr>
+              </thead>
+              <tbody>
+                {rectangles.map((rect, index) => (
+                  <tr key={index}>
+                    <td>フセン {index + 1}</td>
+                    <td>X: {rect.x}, Y: {rect.y}</td>
+                    <td>クイズの答え</td>
+                    <td>
+                      <button onClick={() => handleRemoveRectangle(index)} className="btn btn-danger">削除</button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
       </div>
     </div>
   );
