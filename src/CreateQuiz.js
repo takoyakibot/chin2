@@ -44,6 +44,11 @@ const CreateQuiz = () => {
     }
   };
 
+  const handleRemoveRectangle = (index) => {
+    const newRectangles = rectangles.filter((_, i) => i !== index);
+    setRectangles(newRectangles);
+  };
+
   return (
     <div className="container">
       <h1>クイズ作成</h1>
@@ -80,6 +85,7 @@ const CreateQuiz = () => {
               <th>クイズ番号</th>
               <th>フセン座標</th>
               <th>クイズの答え</th>
+              <th>削除</th>
               <th>編集</th>
               <th>確定</th>
             </tr>
@@ -90,6 +96,9 @@ const CreateQuiz = () => {
                 <td>フセン {index + 1}</td>
                 <td>X: {rect.x}, Y: {rect.y}</td>
                 <td>クイズの答え</td>
+                <td>
+                  <button onClick={() => handleRemoveRectangle(index)}>削除</button>
+                </td>
                 <td>
                   {/* <button onClick={() => handleFusenMouseDown(index)} disabled={isDragging}>
                     編集
