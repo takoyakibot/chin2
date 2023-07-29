@@ -71,6 +71,15 @@ const CreateQuiz = () => {
         {/* フセン追加ボタン */}
         <button onClick={handleAddRectangle}>フセンを追加</button>
       </div>
+      {/* クイズ一覧フィールド */}
+      <div className="quiz-list">
+        <h2>クイズ一覧</h2>
+        <ul>
+          {rectangles.map((rect, index) => (
+            <li key={index}>フセン {index + 1} - X: {rect.x}, Y: {rect.y}</li>
+          ))}
+        </ul>
+      </div>
     </div>
   );
 };

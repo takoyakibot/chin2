@@ -47,7 +47,6 @@ h1 {
   background-color: #c0c0c0;
 }
 
-/* 元のボタンは非表示 */
 .browse_btn input[type='file'] {
   display: none;
 }
@@ -58,6 +57,30 @@ h1 {
   margin-top: 10px;
 }
 
+/* クイズ一覧フィールドのスタイル */
+.quiz-list {
+  margin-top: 20px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  padding: 10px;
+}
+
+.quiz-list h2 {
+  font-size: 24px;
+  margin-bottom: 10px;
+}
+
+.quiz-list ul {
+  list-style-type: none;
+  padding: 0;
+}
+
+.quiz-list li {
+  padding: 5px 0;
+  border-bottom: 1px solid #ccc;
+}
+
+/* フセンのスタイル */
 .rectangle {
   position: absolute;
   width: 100px;
@@ -65,4 +88,7 @@ h1 {
   background-color: #ffffff;
   border: 1px solid #000000;
   pointer-events: none; /* マウスイベントをフセンが遮らないようにする */
+  text-align: center;
+  line-height: 100px;
+  font-size: 14px;
 }
