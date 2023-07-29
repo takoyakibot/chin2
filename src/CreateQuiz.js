@@ -26,13 +26,19 @@ const CreateQuiz = () => {
     }
   };
   
+  const handleImageClick = (event) => {
+    const rect = event.target.getBoundingClientRect();
+    const x = event.clientX - rect.left;
+    const y = event.clientY - rect.top;
+    alert(`Clicked at (${x}, ${y})`);
+  };
 
   return (
     <div className="container">
       <h1>クイズ作成</h1>
       <div className="image-select">
         {/* 画像選択フィールドの画像表示領域 */}
-        {selectedImage && <img src={selectedImage} alt="Selected" />}
+        {selectedImage && <img src={selectedImage} alt="Selected" onClick={handleImageClick} />}
         {/* 画像選択ボタン */}
         <div className="image-select-button">
             <label htmlFor="filename" className="browse_btn">
