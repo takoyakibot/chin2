@@ -39,8 +39,15 @@ h1 {
   border-radius: 8px;
   font-weight: bold;
   cursor: pointer;
+  border: 1px solid #999; /* 枠線を追加 */
 }
 
+/* ホバー時のスタイル */
+.browse_btn:hover {
+  background-color: #c0c0c0;
+}
+
+/* 元のボタンは非表示 */
 .browse_btn input[type='file'] {
   display: none;
 }
