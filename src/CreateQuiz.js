@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import './style.css'; // スタイルシートをインポート
+import './style.css';
 
 const CreateQuiz = () => {
   const [selectedImage, setSelectedImage] = useState(null);
@@ -74,11 +74,36 @@ const CreateQuiz = () => {
       {/* クイズ一覧フィールド */}
       <div className="quiz-list">
         <h2>クイズ一覧</h2>
-        <ul>
-          {rectangles.map((rect, index) => (
-            <li key={index}>フセン {index + 1} - X: {rect.x}, Y: {rect.y}</li>
-          ))}
-        </ul>
+        <table>
+          <thead>
+            <tr>
+              <th>クイズ番号</th>
+              <th>フセン座標</th>
+              <th>クイズの答え</th>
+              <th>編集</th>
+              <th>確定</th>
+            </tr>
+          </thead>
+          <tbody>
+            {rectangles.map((rect, index) => (
+              <tr key={index}>
+                <td>フセン {index + 1}</td>
+                <td>X: {rect.x}, Y: {rect.y}</td>
+                <td>クイズの答え</td>
+                <td>
+                  {/* <button onClick={() => handleFusenMouseDown(index)} disabled={isDragging}>
+                    編集
+                  </button> */}
+                </td>
+                <td>
+                  {/* {quiz.editing && (
+                    <button onClick={() => handleConfirmFusen(index)}>確定</button>
+                  )} */}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
       </div>
     </div>
   );
