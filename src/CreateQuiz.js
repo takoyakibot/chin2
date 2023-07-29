@@ -28,9 +28,10 @@ const CreateQuiz = () => {
         {selectedImage && <img src={selectedImage} alt="Selected" />}
         {/* 画像選択ボタン */}
         <div className="image-select-button">
-          <input type="file" onChange={handleImageSelect} accept="image/*" />
-          {/* 保存した画像のパス情報を表示 */}
-          {selectedImage && <span>{selectedImage}</span>}
+            <label htmlFor="filename" className="browse_btn">
+            画像を選択
+            <input type="file" id="filename" onChange={handleImageSelect} accept="image/*" />
+            </label>
         </div>
       </div>
     </div>

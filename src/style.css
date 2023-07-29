@@ -31,17 +31,22 @@ h1 {
   margin-bottom: 10px;
 }
 
-/* 画像選択ボタンのスタイル */
-.image-select-button {
-  display: flex;
-  align-items: center;
+/* ファイル選択ボタンのスタイル */
+.browse_btn {
+  display: inline-block;
+  background-color: #d3d3d3;
+  padding: 6px;
+  border-radius: 8px;
+  font-weight: bold;
+  cursor: pointer;
 }
 
-.image-select-button input[type="file"] {
-  margin-right: 10px;
+.browse_btn input[type='file'] {
+  display: none;
 }
 
-.image-select-button span {
-  font-size: 14px;
-  color: #555;
+/* 選択したファイル名の表示スタイル */
+.image-select span {
+  display: block;
+  margin-top: 10px;
 }
