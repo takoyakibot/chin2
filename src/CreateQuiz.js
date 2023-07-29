@@ -41,6 +41,7 @@ const CreateQuiz = () => {
   const handleAddRectangle = () => {
     if (rectangles.length < 2) {
       setRectangles([...rectangles, rectanglePosition]);
+      setShowRectangle(false); // 仮フセンを追加したら非表示にする
     }
   };
 
@@ -57,6 +58,12 @@ const CreateQuiz = () => {
         {selectedImage && (
           <div style={{ position: 'relative' }}>
             <img src={selectedImage} alt="Selected" onClick={handleImageClick} />
+            {showRectangle && (
+              <div
+                className="rectangle" // 仮フセンのスタイル
+                style={{ top: `${rectanglePosition.y}px`, left: `${rectanglePosition.x}px`, opacity: 0.5 }}
+              ></div>
+            )}
             {rectangles.map((rect, index) => (
               <div
                 key={index}
@@ -74,7 +81,9 @@ const CreateQuiz = () => {
           </label>
         </div>
         {/* フセン追加ボタン */}
-        <button onClick={handleAddRectangle}>フセンを追加</button>
+        <button disabled={!showRectangle} onClick={handleAddRectangle}>
+          フセンを追加
+        </button>
       </div>
       {/* クイズ一覧フィールド */}
       <div className="quiz-list">
