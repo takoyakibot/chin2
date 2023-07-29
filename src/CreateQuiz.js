@@ -52,11 +52,11 @@ const CreateQuiz = () => {
     <div className="container">
       <h1 className="mt-4 mb-4">クイズ作成</h1>
       <div className="row">
-        <div className="col-md-6 mb-4">
+        <div className="col-md-8 mb-4">
           {/* 画像選択フィールドの画像表示領域 */}
           {selectedImage && (
             <div style={{ position: 'relative' }}>
-              <img src={selectedImage} alt="Selected" onClick={handleImageClick} className="img-fluid" />
+              <img src={selectedImage} alt="Selected" onClick={handleImageClick} className="image-select" />
               {showRectangle && (
                 <div
                   className="rectangle" // 仮フセンのスタイル
@@ -84,7 +84,7 @@ const CreateQuiz = () => {
             フセンを追加
           </button>
         </div>
-        <div className="col-md-6">
+        <div className="col-md-4">
           {/* クイズ一覧フィールド */}
           <div className="quiz-list">
             <h2>クイズ一覧</h2>
