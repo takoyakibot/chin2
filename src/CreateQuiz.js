@@ -11,14 +11,21 @@ const CreateQuiz = () => {
       setSelectedImage(savedImagePath);
     }
   }, []);
-
+  
   const handleImageSelect = (event) => {
     const imageFile = event.target.files[0];
-    const imageUrl = URL.createObjectURL(imageFile);
-    setSelectedImage(imageUrl);
-    // 選択した画像のパス情報をセッションストレージに保存
-    sessionStorage.setItem('selectedImagePath', imageUrl);
+    
+    if (imageFile) {
+      const imageUrl = URL.createObjectURL(imageFile);
+      setSelectedImage(imageUrl);
+      // 選択した画像のパス情報をセッションストレージに保存
+      sessionStorage.setItem('selectedImagePath', imageUrl);
+    } else {
+      setSelectedImage(null); // ファイル選択をキャンセルした場合、selectedImageをnullに設定
+      sessionStorage.removeItem('selectedImagePath'); // キャンセル時に保存されたセッションストレージを削除
+    }
   };
+  
 
   return (
     <div className="container">
