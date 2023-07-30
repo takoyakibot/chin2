@@ -102,8 +102,15 @@ const CreateQuiz = () => {
     alert('保存しました！');
 
     // クイズ回答が正解の場合、アニメーションを表示する
-    setShowCorrectAnimation(true);
-    setTimeout(() => setShowCorrectAnimation(false), 3000); // 3秒後にアニメーションを非表示にする
+    setShowOverlay(true); // フセン追加ボタンがクリックされたときにOverlayを表示
+  };
+
+  // Overlayを表示するかどうかを制御するステート
+  const [showOverlay, setShowOverlay] = useState(false);
+
+  // Overlayを閉じる関数
+  const handleCloseOverlay = () => {
+    setShowOverlay(false);
   };
 
   return (
@@ -185,7 +192,7 @@ const CreateQuiz = () => {
         </div>
       </div>
       {/* アニメーションのオーバーレイ */}
-      <Overlay showAnimation={showCorrectAnimation} />
+      {showOverlay && <Overlay onCloseOverlay={handleCloseOverlay} />}
     </div>
   );
 };

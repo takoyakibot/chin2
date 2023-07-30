@@ -13,8 +13,16 @@ const Overlay = ({ showOverlay, onCloseOverlay }) => {
     player.playVideo();
   };
 
+  // オーバーレイがクリックされたときに閉じる処理
+  const handleClickOverlay = (event) => {
+    // オーバーレイの外側をクリックした場合は閉じる
+    if (event.target.classList.contains('overlay')) {
+      onCloseOverlay();
+    }
+  };
+
   return (
-    <div className={`overlay ${showOverlay ? 'active' : ''}`}>
+    <div className={`overlay ${showOverlay ? 'active' : ''}`} onClick={handleClickOverlay}>
       <div className="overlay-content">
         <div className="close-button" onClick={onCloseOverlay}>
           ×
