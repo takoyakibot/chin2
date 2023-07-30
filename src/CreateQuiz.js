@@ -115,38 +115,36 @@ const handleQuizAnswerChange = (event, index) => {
               <div className="col">
                 {/* フセン追加ボタン */}
                 <button disabled={!showRectangle} onClick={handleAddRectangle} className="btn btn-primary">
-                  フセンを追加
+                  フセン追加
                 </button>
               </div>
             </div>
-            <table className="table table-bordered">
-              <thead>
-                <tr>
-                  <th>No</th>
-                  <th>回答</th>
-                  <th>削除</th>
-                </tr>
-              </thead>
-              <tbody>
-                {quizInfo.map((info, index) => (
-                  <tr key={index}>
-                    <td>{index + 1}</td>
-                    <td>
-                      <select value={info.answer} onChange={(e) => handleQuizAnswerChange(e, index)}>
-                        <option value="YES">YES</option>
-                        <option value="NO">NO</option>
-                      </select>
-                    </td>
-                    <td>
-                      <button onClick={() => handleRemoveRectangle(index)}
+            {/* クイズ一覧のコード */}
+            <div>
+              <div className="row quiz-header">
+                <div className="col col-2">No</div>
+                <div className="col">回答</div>
+                <div className="col">削除</div>
+              </div>
+              {quizInfo.map((info, index) => (
+                <div key={index} className="row quiz-item">
+                  <div className="col col-2 d-flex align-items-center justify-content-center">
+                    {index + 1}</div>
+                  <div className="col d-flex align-items-center justify-content-center">
+                    <select value={info.answer} onChange={(e) => handleQuizAnswerChange(e, index)}>
+                      <option value="YES">YES</option>
+                      <option value="NO">NO</option>
+                    </select>
+                  </div>
+                  <div className="col d-flex align-items-center justify-content-center">
+                    <button onClick={() => handleRemoveRectangle(index)}
                        className="btn btn-danger btn-remove" style={{ padding: '0 12px' }}>
-                        削除
-                      </button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+                      削除
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       </div>
