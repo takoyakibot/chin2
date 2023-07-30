@@ -28,9 +28,6 @@ const CreateQuiz = () => {
       setSelectedImage(imageUrl);
       // 選択した画像のパス情報をセッションストレージに保存
       sessionStorage.setItem('selectedImagePath', imageUrl);
-    } else {
-      setSelectedImage(null); // ファイル選択をキャンセルした場合、selectedImageをnullに設定
-      sessionStorage.removeItem('selectedImagePath'); // キャンセル時に保存されたセッションストレージを削除
     }
   };
 
