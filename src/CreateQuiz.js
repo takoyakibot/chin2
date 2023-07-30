@@ -41,12 +41,13 @@ const CreateQuiz = () => {
     setShowRectangle(true);
   };
 
-  const handleAddRectangle = () => {
-    const confirmed = window.confirm('回答は"""YES"""でよろしいですか？ キャンセルを押すと、回答が"""No"""の状態で追加されます。あとから変更することも可能です。');
-    var tempAnswer = 'NO';
-    if (confirmed) {
-      tempAnswer = 'YES';
+  const handleAddRectangle = (e) => {
+    if (!showRectangle || e.key !== 'Enter') {
+      return;
     }
+
+    const confirmed = window.confirm('回答は"""YES"""でよろしいですか？ キャンセルを押すと、回答が"""No"""の状態で追加されます。あとから変更することも可能です。');
+    const tempAnswer = confirmed ? 'YES' : 'NO';
     const updatedQuizInfo = [
       ...quizInfo,
       { x: rectanglePosition.x, y: rectanglePosition.y, answer: tempAnswer }
@@ -58,6 +59,14 @@ const CreateQuiz = () => {
     // クイズ回答を初期値に戻す
     setQuizAnswer('YES');
   };
+
+  // Enterキーのイベントハンドラを設定
+  useEffect(() => {
+    document.addEventListener('keydown', handleAddRectangle);
+    return () => {
+      document.removeEventListener('keydown', handleAddRectangle);
+    };
+  }, [rectanglePosition, quizInfo]);
 
   const handleRemoveRectangle = (index) => {
     // 削除ボタンを押す前に警告を表示
