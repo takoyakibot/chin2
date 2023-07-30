@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import './style.css';
+import Overlay from './Overlay';
 
 const CreateQuiz = () => {
   const [selectedImage, setSelectedImage] = useState(null);
@@ -7,6 +8,7 @@ const CreateQuiz = () => {
   const [showRectangle, setShowRectangle] = useState(false);
   const [rectanglePosition, setRectanglePosition] = useState({ x: 0, y: 0 });
   const [quizAnswer, setQuizAnswer] = useState('YES'); // クイズの回答を保持するステート
+  const [showCorrectAnimation, setShowCorrectAnimation] = useState(false);
 
   // ページロード時にセッションストレージから保存された画像パス情報とフセン情報を取得
   useEffect(() => {
@@ -98,6 +100,10 @@ const CreateQuiz = () => {
     localStorage.setItem('quizInfo', JSON.stringify(quizInfo));
 
     alert('保存しました！');
+
+    // クイズ回答が正解の場合、アニメーションを表示する
+    setShowCorrectAnimation(true);
+    setTimeout(() => setShowCorrectAnimation(false), 3000); // 3秒後にアニメーションを非表示にする
   };
 
   return (
@@ -178,6 +184,8 @@ const CreateQuiz = () => {
           </div>
         </div>
       </div>
+      {/* アニメーションのオーバーレイ */}
+      <Overlay showAnimation={showCorrectAnimation} />
     </div>
   );
 };
