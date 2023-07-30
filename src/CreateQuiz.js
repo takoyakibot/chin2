@@ -10,8 +10,12 @@ const CreateQuiz = () => {
   // ページロード時にセッションストレージから保存された画像パス情報を取得
   useEffect(() => {
     const savedImagePath = sessionStorage.getItem('selectedImagePath');
+    const savedRectangles = sessionStorage.getItem('rectangles');
     if (savedImagePath) {
       setSelectedImage(savedImagePath);
+    }
+    if (savedRectangles) {
+        setRectangles(JSON.parse(savedRectangles));
     }
   }, []);
 
@@ -39,13 +43,17 @@ const CreateQuiz = () => {
   };
 
   const handleAddRectangle = () => {
-      setRectangles([...rectangles, rectanglePosition]);
-      setShowRectangle(false); // 仮フセンを追加したら非表示にする
+    setRectangles([...rectangles, rectanglePosition]);
+    setShowRectangle(false); // 仮フセンを追加したら非表示にする
+    //更新したフセンを保存
+    sessionStorage.setItem('rectangles', JSON.stringify(rectangles));
   };
 
   const handleRemoveRectangle = (index) => {
     const newRectangles = rectangles.filter((_, i) => i !== index);
     setRectangles(newRectangles);
+    //更新したフセンを保存
+    sessionStorage.setItem('rectangles', JSON.stringify(rectangles));
   };
 
   return (
@@ -53,25 +61,25 @@ const CreateQuiz = () => {
       <h1 className="mt-4 mb-4">クイズ作成</h1>
       <div className="row">
         <div className="col-md-8 mb-4">
-          {/* 画像選択フィールドの画像表示領域 */}
-          {selectedImage && (
-            <div style={{ position: 'relative' }}>
-              <img src={selectedImage} alt="Selected" onClick={handleImageClick} className="image-select" />
-              {showRectangle && (
-                <div
-                  className="rectangle" // 仮フセンのスタイル
-                  style={{ top: `${rectanglePosition.y}px`, left: `${rectanglePosition.x}px`, opacity: 0.5 }}
-                ></div>
-              )}
-              {rectangles.map((rect, index) => (
-                <div
-                  key={index}
-                  className="rectangle"
-                  style={{ top: `${rect.y}px`, left: `${rect.x}px` }}
-                ></div>
-              ))}
-            </div>
+      {/* 画像選択フィールドの画像表示領域 */}
+      {selectedImage && (
+        <div style={{ position: 'relative' }}>
+          <img src={selectedImage} alt="Selected" onClick={handleImageClick} className="image-select" />
+          {showRectangle && (
+            <div
+              className="rectangle" // 仮フセンのスタイル
+              style={{ top: `${rectanglePosition.y}px`, left: `${rectanglePosition.x}px`, opacity: 0.5 }}
+            ></div>
           )}
+          {rectangles.map((rect, index) => (
+            <div
+              key={index}
+              className="rectangle"
+              style={{ top: `${rect.y}px`, left: `${rect.x}px` }}
+            ></div>
+          ))}
+        </div>
+      )}
           {/* 画像選択ボタン */}
           <div className="image-select-button">
             <label htmlFor="filename" className="browse_btn">
