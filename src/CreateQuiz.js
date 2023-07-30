@@ -41,7 +41,7 @@ const CreateQuiz = () => {
   };
 
 const handleAddRectangle = () => {
-  const confirmed = window.confirm('回答はYESでよろしいですか？<br />（キャンセルを押すと、回答はNoの状態で追加されます）');
+  const confirmed = window.confirm('回答は"""YES"""でよろしいですか？　キャンセルを押すと、回答が"""No"""の状態で追加されます。あとから変更することも可能です。');
   var tempAnswer = 'NO';
   if (confirmed) {
     tempAnswer = 'YES';
@@ -57,10 +57,11 @@ const handleAddRectangle = () => {
 
 const handleRemoveRectangle = (index) => {
   // 削除ボタンを押す前に警告を表示
-  const confirmed = window.confirm('削除しますか？');
+  const confirmed = window.confirm('削除しますか？（番号がずれる場合があるので注意してください）');
   if (confirmed) {
     const newQuizInfo = quizInfo.filter((_, i) => i !== index);
     setQuizInfo(newQuizInfo);
+    setShowRectangle(false); // 仮フセンを追加したら非表示にする
     // 更新したフセン情報を保存
     sessionStorage.setItem('quizInfo', JSON.stringify(newQuizInfo));
   }
@@ -91,11 +92,10 @@ const handleQuizAnswerChange = (event, index) => {
                 ></div>
               )}
               {quizInfo.map((info, index) => (
-                <div
-                  key={index}
-                  className="rectangle"
-                  style={{ top: `${info.y}px`, left: `${info.x}px` }}
-                ></div>
+                <div key={index} style={{ position: 'absolute', top: `${info.y}px`, left: `${info.x}px` }}>
+                  <div className="rectangle"></div>
+                  <div className="index-text">{index + 1}</div>
+                </div>
               ))}
             </div>
           )}
