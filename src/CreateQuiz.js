@@ -3,19 +3,20 @@ import './style.css';
 
 const CreateQuiz = () => {
   const [selectedImage, setSelectedImage] = useState(null);
-  const [rectangles, setRectangles] = useState([]);
+  const [quizInfo, setQuizInfo] = useState([]); // フセンの情報とクイズの回答を保持するステート
   const [showRectangle, setShowRectangle] = useState(false);
   const [rectanglePosition, setRectanglePosition] = useState({ x: 0, y: 0 });
+  const [quizAnswer, setQuizAnswer] = useState('YES'); // クイズの回答を保持するステート
 
-  // ページロード時にセッションストレージから保存された画像パス情報を取得
+  // ページロード時にセッションストレージから保存された画像パス情報とフセン情報を取得
   useEffect(() => {
     const savedImagePath = sessionStorage.getItem('selectedImagePath');
-    const savedRectangles = sessionStorage.getItem('rectangles');
+    const savedQuizInfo = sessionStorage.getItem('quizInfo');
     if (savedImagePath) {
       setSelectedImage(savedImagePath);
     }
-    if (savedRectangles) {
-        setRectangles(JSON.parse(savedRectangles));
+    if (savedQuizInfo) {
+      setQuizInfo(JSON.parse(savedQuizInfo));
     }
   }, []);
 
@@ -42,50 +43,61 @@ const CreateQuiz = () => {
     setShowRectangle(true);
   };
 
-  const handleAddRectangle = () => {
-    const updatedRectangles = [...rectangles, rectanglePosition];
-    setRectangles(updatedRectangles);
-    setShowRectangle(false); // 仮フセンを追加したら非表示にする
-    //更新したフセンを保存
-    sessionStorage.setItem('rectangles', JSON.stringify(updatedRectangles));
-  };
+const handleAddRectangle = () => {
+  const updatedQuizInfo = [...quizInfo, { x: rectanglePosition.x, y: rectanglePosition.y, answer: quizAnswer }];
+  setQuizInfo(updatedQuizInfo);
+  setShowRectangle(false); // 仮フセンを追加したら非表示にする
+  // 更新したフセン情報を保存
+  sessionStorage.setItem('quizInfo', JSON.stringify(updatedQuizInfo));
+  // クイズ回答を初期値に戻す
+  setQuizAnswer('YES');
+};
 
-  const handleRemoveRectangle = (index) => {
-    const newRectangles = rectangles.filter((_, i) => i !== index);
-    setRectangles(newRectangles);
-    //更新したフセンを保存
-    sessionStorage.setItem('rectangles', JSON.stringify(newRectangles));
-  };
+const handleRemoveRectangle = (index) => {
+  const newQuizInfo = quizInfo.filter((_, i) => i !== index);
+  setQuizInfo(newQuizInfo);
+  // 更新したフセン情報を保存
+  sessionStorage.setItem('quizInfo', JSON.stringify(newQuizInfo));
+};
+
+const handleQuizAnswerChange = (event, index) => {
+  const { value } = event.target;
+  // 対象のフセンの回答を更新
+  const updatedQuizInfo = [...quizInfo];
+  updatedQuizInfo[index].answer = value;
+  setQuizInfo(updatedQuizInfo);
+  // 更新したフセン情報を保存
+  sessionStorage.setItem('quizInfo', JSON.stringify(updatedQuizInfo));
+};
 
   return (
     <div className="container">
-      <h1 className="mt-4 mb-4">クイズ作成</h1>
       <div className="row">
         <div className="col-lg-8 mb-4">
-      {/* 画像選択フィールドの画像表示領域 */}
-      {selectedImage && (
-        <div style={{ position: 'relative' }}>
-          <img src={selectedImage} alt="Selected" onClick={handleImageClick} className="image-select" />
-          {showRectangle && (
-            <div
-              className="rectangle" // 仮フセンのスタイル
-              style={{ top: `${rectanglePosition.y}px`, left: `${rectanglePosition.x}px`, opacity: 0.5 }}
-            ></div>
+          {/* 画像選択フィールドの画像表示領域 */}
+          {selectedImage && (
+            <div style={{ position: 'relative' }}>
+              <img src={selectedImage} alt="Selected" onClick={handleImageClick} className="image-select" />
+              {showRectangle && (
+                <div
+                  className="rectangle" // 仮フセンのスタイル
+                  style={{ top: `${rectanglePosition.y}px`, left: `${rectanglePosition.x}px`, opacity: 0.5 }}
+                ></div>
+              )}
+              {quizInfo.map((info, index) => (
+                <div
+                  key={index}
+                  className="rectangle"
+                  style={{ top: `${info.y}px`, left: `${info.x}px` }}
+                ></div>
+              ))}
+            </div>
           )}
-          {rectangles.map((rect, index) => (
-            <div
-              key={index}
-              className="rectangle"
-              style={{ top: `${rect.y}px`, left: `${rect.x}px` }}
-            ></div>
-          ))}
-        </div>
-      )}
           {/* 画像選択ボタン */}
           <div className="image-select-button">
             <label htmlFor="filename" className="browse_btn">
               画像を選択
-            <input type="file" id="filename" onChange={handleImageSelect} accept="image/*" />
+              <input type="file" id="filename" onChange={handleImageSelect} accept="image/*" />
             </label>
           </div>
         </div>
@@ -93,11 +105,13 @@ const CreateQuiz = () => {
           {/* クイズ一覧フィールド */}
           <div className="quiz-list">
             <div className="row mb-2">
-              <div className="col d-flex align-items-center justify-content-center">クイズ一覧</div>
+              <div className="col d-flex align-items-center justify-content-center">
+                一覧
+              </div>
               <div className="col">
                 {/* フセン追加ボタン */}
                 <button disabled={!showRectangle} onClick={handleAddRectangle} className="btn btn-primary">
-                  フセン追加
+                  フセンを追加
                 </button>
               </div>
             </div>
@@ -110,12 +124,20 @@ const CreateQuiz = () => {
                 </tr>
               </thead>
               <tbody>
-                {rectangles.map((rect, index) => (
+                {quizInfo.map((info, index) => (
                   <tr key={index}>
                     <td>{index + 1}</td>
-                    <td>クイズの答え</td>
                     <td>
-                      <button onClick={() => handleRemoveRectangle(index)} className="btn btn-danger">削除</button>
+                      <select value={info.answer} onChange={(e) => handleQuizAnswerChange(e, index)}>
+                        <option value="YES">YES</option>
+                        <option value="NO">NO</option>
+                      </select>
+                    </td>
+                    <td>
+                      <button onClick={() => handleRemoveRectangle(index)}
+                       className="btn btn-danger btn-remove" style={{ padding: '0 12px' }}>
+                        削除
+                      </button>
                     </td>
                   </tr>
                 ))}
