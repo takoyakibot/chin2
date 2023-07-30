@@ -54,10 +54,14 @@ const handleAddRectangle = () => {
 };
 
 const handleRemoveRectangle = (index) => {
-  const newQuizInfo = quizInfo.filter((_, i) => i !== index);
-  setQuizInfo(newQuizInfo);
-  // 更新したフセン情報を保存
-  sessionStorage.setItem('quizInfo', JSON.stringify(newQuizInfo));
+  // 削除ボタンを押す前に警告を表示
+  const confirmed = window.confirm('削除しますか？');
+  if (confirmed) {
+    const newQuizInfo = quizInfo.filter((_, i) => i !== index);
+    setQuizInfo(newQuizInfo);
+    // 更新したフセン情報を保存
+    sessionStorage.setItem('quizInfo', JSON.stringify(newQuizInfo));
+  }
 };
 
 const handleQuizAnswerChange = (event, index) => {
