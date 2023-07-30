@@ -25,6 +25,8 @@ h1 {
 
 .image-select {
   width: 600px;
+  height: auto;
+  display: block;
   margin-bottom: 20px;
 }
 
