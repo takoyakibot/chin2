@@ -7,6 +7,7 @@ body {
 
 .container {
   max-width: 1300px;
+  min-width: 630px;
   margin: 20px auto;
   padding: 20px;
   border: 2px solid #007bff;
@@ -91,16 +92,4 @@ h1 {
   text-align: center;
   line-height: 100px;
   font-size: 14px;
-}
-
-/* メディアクエリ: 画面サイズが600px以下の場合に適用 */
-@media (max-width: 600px) {
-  .container {
-    width: 90%;
-  }
-
-  .image-select,
-  .quiz-list {
-    margin-bottom: 20px;
-  }
 }

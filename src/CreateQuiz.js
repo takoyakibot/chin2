@@ -61,7 +61,7 @@ const CreateQuiz = () => {
     <div className="container">
       <h1 className="mt-4 mb-4">クイズ作成</h1>
       <div className="row">
-        <div className="col-md-8 mb-4">
+        <div className="col-lg-8 mb-4">
       {/* 画像選択フィールドの画像表示領域 */}
       {selectedImage && (
         <div style={{ position: 'relative' }}>
@@ -88,29 +88,31 @@ const CreateQuiz = () => {
             <input type="file" id="filename" onChange={handleImageSelect} accept="image/*" />
             </label>
           </div>
-          {/* フセン追加ボタン */}
-          <button disabled={!showRectangle} onClick={handleAddRectangle} className="btn btn-primary">
-            フセンを追加
-          </button>
         </div>
-        <div className="col-md-4">
+        <div className="col-lg-4">
           {/* クイズ一覧フィールド */}
           <div className="quiz-list">
-            <h2>クイズ一覧</h2>
+            <div className="row mb-2">
+              <div className="col d-flex align-items-center justify-content-center">クイズ一覧</div>
+              <div className="col">
+                {/* フセン追加ボタン */}
+                <button disabled={!showRectangle} onClick={handleAddRectangle} className="btn btn-primary">
+                  フセン追加
+                </button>
+              </div>
+            </div>
             <table className="table table-bordered">
               <thead>
                 <tr>
-                  <th>クイズ番号</th>
-                  <th>フセン座標</th>
-                  <th>クイズの答え</th>
+                  <th>No</th>
+                  <th>回答</th>
                   <th>削除</th>
                 </tr>
               </thead>
               <tbody>
                 {rectangles.map((rect, index) => (
                   <tr key={index}>
-                    <td>フセン {index + 1}</td>
-                    <td>X: {rect.x}, Y: {rect.y}</td>
+                    <td>{index + 1}</td>
                     <td>クイズの答え</td>
                     <td>
                       <button onClick={() => handleRemoveRectangle(index)} className="btn btn-danger">削除</button>
