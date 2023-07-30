@@ -43,17 +43,18 @@ const CreateQuiz = () => {
   };
 
   const handleAddRectangle = () => {
-    setRectangles([...rectangles, rectanglePosition]);
+    const updatedRectangles = [...rectangles, rectanglePosition];
+    setRectangles(updatedRectangles);
     setShowRectangle(false); // 仮フセンを追加したら非表示にする
     //更新したフセンを保存
-    sessionStorage.setItem('rectangles', JSON.stringify(rectangles));
+    sessionStorage.setItem('rectangles', JSON.stringify(updatedRectangles));
   };
 
   const handleRemoveRectangle = (index) => {
     const newRectangles = rectangles.filter((_, i) => i !== index);
     setRectangles(newRectangles);
     //更新したフセンを保存
-    sessionStorage.setItem('rectangles', JSON.stringify(rectangles));
+    sessionStorage.setItem('rectangles', JSON.stringify(newRectangles));
   };
 
   return (
