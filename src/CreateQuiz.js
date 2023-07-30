@@ -41,7 +41,12 @@ const CreateQuiz = () => {
   };
 
 const handleAddRectangle = () => {
-  const updatedQuizInfo = [...quizInfo, { x: rectanglePosition.x, y: rectanglePosition.y, answer: quizAnswer }];
+  const confirmed = window.confirm('回答はYESでよろしいですか？<br />（キャンセルを押すと、回答はNoの状態で追加されます）');
+  var tempAnswer = 'NO';
+  if (confirmed) {
+    tempAnswer = 'YES';
+  }
+  const updatedQuizInfo = [...quizInfo, { x: rectanglePosition.x, y: rectanglePosition.y, answer: tempAnswer }];
   setQuizInfo(updatedQuizInfo);
   setShowRectangle(false); // 仮フセンを追加したら非表示にする
   // 更新したフセン情報を保存
