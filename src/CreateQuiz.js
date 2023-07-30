@@ -32,23 +32,24 @@ const CreateQuiz = () => {
   };
 
   const handleImageClick = (event) => {
+    var centering = 50
     const rect = event.target.getBoundingClientRect();
-    const x = event.clientX - rect.left;
-    const y = event.clientY - rect.top;
+    const x = event.clientX - rect.left - centering;
+    const y = event.clientY - rect.top - centering;
 
     setRectanglePosition({ x, y });
     setShowRectangle(true);
   };
 
   const handleAddRectangle = () => {
-    const confirmed = window.confirm('回答は"""YES"""でよろしいですか？　キャンセルを押すと、回答が"""No"""の状態で追加されます。あとから変更することも可能です。');
+    const confirmed = window.confirm('回答は"""YES"""でよろしいですか？ キャンセルを押すと、回答が"""No"""の状態で追加されます。あとから変更することも可能です。');
     var tempAnswer = 'NO';
     if (confirmed) {
       tempAnswer = 'YES';
     }
     const updatedQuizInfo = [
       ...quizInfo,
-      { x: rectanglePosition.x, y: rectanglePosition.y, answer: tempAnswer, key: quizInfo.length + 1 }
+      { x: rectanglePosition.x, y: rectanglePosition.y, answer: tempAnswer }
     ];
     setQuizInfo(updatedQuizInfo);
     setShowRectangle(false); // 仮フセンを追加したら非表示にする
@@ -107,7 +108,7 @@ const CreateQuiz = () => {
               {quizInfo.map((info, index) => (
                 <div key={index} style={{ position: 'absolute', top: `${info.y}px`, left: `${info.x}px` }}>
                   <div className="rectangle"></div>
-                  <div className="index-text">{info.key}</div>
+                  <div className="index-text">{index + 1}</div>
                 </div>
               ))}
             </div>
@@ -144,7 +145,7 @@ const CreateQuiz = () => {
               {quizInfo.map((info, index) => (
                 <div key={index} className="row quiz-item">
                   <div className="col col-2 d-flex align-items-center justify-content-center">
-                    {info.key}</div>
+                    {index + 1}</div>
                   <div className="col d-flex align-items-center justify-content-center">
                     <select value={info.answer} onChange={(e) => handleQuizAnswerChange(e, index)}>
                       <option value="YES">YES</option>
