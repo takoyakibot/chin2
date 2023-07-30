@@ -46,7 +46,10 @@ const handleAddRectangle = () => {
   if (confirmed) {
     tempAnswer = 'YES';
   }
-  const updatedQuizInfo = [...quizInfo, { x: rectanglePosition.x, y: rectanglePosition.y, answer: tempAnswer }];
+  const updatedQuizInfo = [
+    ...quizInfo,
+    { x: rectanglePosition.x, y: rectanglePosition.y, answer: tempAnswer, key: quizInfo.length + 1 }
+  ];
   setQuizInfo(updatedQuizInfo);
   setShowRectangle(false); // 仮フセンを追加したら非表示にする
   // 更新したフセン情報を保存
@@ -94,7 +97,7 @@ const handleQuizAnswerChange = (event, index) => {
               {quizInfo.map((info, index) => (
                 <div key={index} style={{ position: 'absolute', top: `${info.y}px`, left: `${info.x}px` }}>
                   <div className="rectangle"></div>
-                  <div className="index-text">{index + 1}</div>
+                  <div className="index-text">{info.key}</div>
                 </div>
               ))}
             </div>
@@ -131,7 +134,7 @@ const handleQuizAnswerChange = (event, index) => {
               {quizInfo.map((info, index) => (
                 <div key={index} className="row quiz-item">
                   <div className="col col-2 d-flex align-items-center justify-content-center">
-                    {index + 1}</div>
+                    {info.key}</div>
                   <div className="col d-flex align-items-center justify-content-center">
                     <select value={info.answer} onChange={(e) => handleQuizAnswerChange(e, index)}>
                       <option value="YES">YES</option>
