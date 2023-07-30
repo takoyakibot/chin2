@@ -40,45 +40,55 @@ const CreateQuiz = () => {
     setShowRectangle(true);
   };
 
-const handleAddRectangle = () => {
-  const confirmed = window.confirm('回答は"""YES"""でよろしいですか？　キャンセルを押すと、回答が"""No"""の状態で追加されます。あとから変更することも可能です。');
-  var tempAnswer = 'NO';
-  if (confirmed) {
-    tempAnswer = 'YES';
-  }
-  const updatedQuizInfo = [
-    ...quizInfo,
-    { x: rectanglePosition.x, y: rectanglePosition.y, answer: tempAnswer, key: quizInfo.length + 1 }
-  ];
-  setQuizInfo(updatedQuizInfo);
-  setShowRectangle(false); // 仮フセンを追加したら非表示にする
-  // 更新したフセン情報を保存
-  sessionStorage.setItem('quizInfo', JSON.stringify(updatedQuizInfo));
-  // クイズ回答を初期値に戻す
-  setQuizAnswer('YES');
-};
-
-const handleRemoveRectangle = (index) => {
-  // 削除ボタンを押す前に警告を表示
-  const confirmed = window.confirm('削除しますか？（番号がずれる場合があるので注意してください）');
-  if (confirmed) {
-    const newQuizInfo = quizInfo.filter((_, i) => i !== index);
-    setQuizInfo(newQuizInfo);
+  const handleAddRectangle = () => {
+    const confirmed = window.confirm('回答は"""YES"""でよろしいですか？　キャンセルを押すと、回答が"""No"""の状態で追加されます。あとから変更することも可能です。');
+    var tempAnswer = 'NO';
+    if (confirmed) {
+      tempAnswer = 'YES';
+    }
+    const updatedQuizInfo = [
+      ...quizInfo,
+      { x: rectanglePosition.x, y: rectanglePosition.y, answer: tempAnswer, key: quizInfo.length + 1 }
+    ];
+    setQuizInfo(updatedQuizInfo);
     setShowRectangle(false); // 仮フセンを追加したら非表示にする
     // 更新したフセン情報を保存
-    sessionStorage.setItem('quizInfo', JSON.stringify(newQuizInfo));
-  }
-};
+    sessionStorage.setItem('quizInfo', JSON.stringify(updatedQuizInfo));
+    // クイズ回答を初期値に戻す
+    setQuizAnswer('YES');
+  };
 
-const handleQuizAnswerChange = (event, index) => {
-  const { value } = event.target;
-  // 対象のフセンの回答を更新
-  const updatedQuizInfo = [...quizInfo];
-  updatedQuizInfo[index].answer = value;
-  setQuizInfo(updatedQuizInfo);
-  // 更新したフセン情報を保存
-  sessionStorage.setItem('quizInfo', JSON.stringify(updatedQuizInfo));
-};
+  const handleRemoveRectangle = (index) => {
+    // 削除ボタンを押す前に警告を表示
+    const confirmed = window.confirm('削除しますか？（番号がずれる場合があるので注意してください）');
+    if (confirmed) {
+      const newQuizInfo = quizInfo.filter((_, i) => i !== index);
+      setQuizInfo(newQuizInfo);
+      setShowRectangle(false); // 仮フセンを追加したら非表示にする
+      // 更新したフセン情報を保存
+      sessionStorage.setItem('quizInfo', JSON.stringify(newQuizInfo));
+    }
+  };
+
+  const handleQuizAnswerChange = (event, index) => {
+    const { value } = event.target;
+    // 対象のフセンの回答を更新
+    const updatedQuizInfo = [...quizInfo];
+    updatedQuizInfo[index].answer = value;
+    setQuizInfo(updatedQuizInfo);
+    // 更新したフセン情報を保存
+    sessionStorage.setItem('quizInfo', JSON.stringify(updatedQuizInfo));
+  };
+
+  const handleSave = () => {
+    // selectedImageをローカルストレージに保存
+    localStorage.setItem('selectedImage', selectedImage);
+
+    // quizInfoをローカルストレージに保存
+    localStorage.setItem('quizInfo', JSON.stringify(quizInfo));
+
+    alert('保存しました！');
+  };
 
   return (
     <div className="container">
@@ -150,6 +160,11 @@ const handleQuizAnswerChange = (event, index) => {
                 </div>
               ))}
             </div>
+          </div>
+          <div className="col-12">
+              <button onClick={handleSave} className="btn btn-info">
+                保存
+              </button>
           </div>
         </div>
       </div>
