@@ -8,7 +8,9 @@ const CreateQuiz = () => {
   const [showRectangle, setShowRectangle] = useState(false);
   const [rectanglePosition, setRectanglePosition] = useState({ x: 0, y: 0 });
   const [quizAnswer, setQuizAnswer] = useState('YES'); // クイズの回答を保持するステート
-  const [showCorrectAnimation, setShowCorrectAnimation] = useState(false);
+  const [showOverlay, setShowOverlay] = useState(false);
+  const [quizName, setQuizName] = useState(''); // クイズの名前を保持するステート
+  const [saveButtonDisabled, setSaveButtonDisabled] = useState(true); // 保存ボタンの非アクティブ状態を管理するステート
 
   // ページロード時にセッションストレージから保存された画像パス情報とフセン情報を取得
   useEffect(() => {
@@ -21,6 +23,13 @@ const CreateQuiz = () => {
       setQuizInfo(JSON.parse(savedQuizInfo));
     }
   }, []);
+
+  // テキストボックスの値が変更されたときに実行される関数
+  const handleQuizNameChange = (event) => {
+    const { value } = event.target;
+    setQuizName(value);
+    setSaveButtonDisabled(value.trim() === ''); // テキストボックスが空欄でない場合、保存ボタンと読込ボタンを有効にする
+  };
 
   const handleImageSelect = (event) => {
     const imageFile = event.target.files[0];
@@ -44,7 +53,7 @@ const CreateQuiz = () => {
   };
 
   const handleAddRectangle = (e) => {
-    if (!showRectangle || e.key !== 'Enter') {
+    if (!showRectangle || e.key && e.key !== 'Enter') {
       return;
     }
 
@@ -92,27 +101,63 @@ const CreateQuiz = () => {
     sessionStorage.setItem('quizInfo', JSON.stringify(updatedQuizInfo));
   };
 
-  const handleSave = () => {
-    // selectedImageをローカルストレージに保存
-    localStorage.setItem('selectedImage', selectedImage);
+  // 保存ボタンがクリックされたときに実行される関数
+  const handleSaveQuiz = () => {
+    if (quizName.trim() === '') return; // テキストボックスが空欄の場合は何もしない
 
-    // quizInfoをローカルストレージに保存
-    localStorage.setItem('quizInfo', JSON.stringify(quizInfo));
+    // クイズ名が一致するクイズ情報を検索する
+    const savedQuizInfo = JSON.parse(localStorage.getItem('quizInfo')) || [];
+    const foundQuiz = savedQuizInfo.find((info) => info.quizName === quizName);
 
-    alert('保存しました！');
+    let newQuizInfo = [];
+    if (foundQuiz) {
+      const confirmed = window.confirm('すでに存在するクイズ名です。上書き保存しますか？');
+      if (!confirmed) return; // キャンセルされた場合は何もしない
 
-    // クイズ回答が正解の場合、アニメーションを表示する
-    setShowOverlay(true); // フセン追加ボタンがクリックされたときにOverlayを表示
+      // クイズ名が存在する場合、対応するクイズ情報を上書きする
+      newQuizInfo = savedQuizInfo.map((info) =>
+        info.quizName === quizName
+          ? { quizName, selectedImage, fusens: quizInfo }
+          : info
+      );
+    } else {
+      // クイズ名が存在しない場合、新たにクイズ情報を追加する
+      newQuizInfo = [...savedQuizInfo, { quizName, selectedImage, fusens: quizInfo }];
+    }
+
+    localStorage.setItem('quizInfo', JSON.stringify(newQuizInfo));
+
+    // 保存したよメッセージ
+    alert('クイズ情報を保存しました。');
+
+    // 目いっぱいの祝福を君に
+    setShowOverlay(true);
   };
 
-  // Overlayを表示するかどうかを制御するステート
-  const [showOverlay, setShowOverlay] = useState(false);
+  // 読込ボタンがクリックされたときに実行される関数
+  const handleLoadQuiz = () => {
+    if (quizName.trim() === '') return; // テキストボックスが空欄の場合は何もしない
+
+    // クイズ名が一致するクイズ情報を検索する
+    const savedQuizInfo = JSON.parse(localStorage.getItem('quizInfo')) || [];
+    const foundQuiz = savedQuizInfo.find((info) => info.quizName === quizName);
+
+    if (foundQuiz) {
+      // クイズ情報が見つかった場合、画面に読み込んで表示する
+    setSelectedImage(foundQuiz.selectedImage);
+    setQuizInfo(foundQuiz.fusens); 
+
+      alert('クイズ情報を読み込みました。');
+    } else {
+      alert('指定されたクイズ名の情報が見つかりません。');
+    }
+  };
 
   // Overlayを閉じる関数
   const handleCloseOverlay = () => {
     setShowOverlay(false);
   };
-
+  
   return (
     <div className="container">
       <div className="row">
@@ -185,9 +230,29 @@ const CreateQuiz = () => {
             </div>
           </div>
           <div className="col-12">
-              <button onClick={handleSave} className="btn btn-info">
-                保存
-              </button>
+            <div className="row footer-row">
+              {/* テキストボックス */}
+              <div className="col col-6">
+                <input
+                  type="text" className="quiz-name-input"
+                  placeholder="クイズ名を入力"
+                  value={quizName}
+                  onChange={handleQuizNameChange}
+                />
+              </div>
+              {/* 保存ボタン */}
+              <div className="col col-3">
+                <button disabled={saveButtonDisabled} className="btn btn-info" onClick={handleSaveQuiz}>
+                  保存
+                </button>
+              </div>
+              {/* 読込ボタン */}
+              <div className="col col-3">
+                <button disabled={saveButtonDisabled} className="btn btn-success" onClick={handleLoadQuiz}>
+                  読込
+                </button>
+              </div>
+            </div>
           </div>
         </div>
       </div>
