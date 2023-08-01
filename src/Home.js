@@ -1,15 +1,47 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import './style.css'; // 共通のスタイルシートを読み込む
+import './style.css';
 
-const Home = () => {
+const getQuizzesFromLocalStorage = () => {
+  return JSON.parse(localStorage.getItem('quizInfo')) || [];
+};
+
+const QuizListPage = () => {
+  const [quizzes, setQuizzes] = useState(getQuizzesFromLocalStorage());
+
+  useEffect(() => {
+    setQuizzes(getQuizzesFromLocalStorage());
+  }, []);
+
+  const editQuiz = (quiz) => {
+    sessionStorage.setItem('quizToEdit', JSON.stringify(quiz));
+    // route to createQuiz page
+  };
+
   return (
     <div>
-      <h1>クイズアプリ</h1>
-      <p>ようこそ！クイズを作成して楽しもう！</p>
-      <Link to="/create-quiz">クイズ作成</Link>
+      {quizzes.map((quiz, index) => (
+        <div key={index} className="quiz-row">
+          <div className="quiz-index">{index + 1}</div>
+          <div className="quiz-name">
+            <a href={`https://www.google.com/?q=${quiz.quizName}`}>
+              {quiz.quizName}
+            </a>
+          </div>
+          <div className="quiz-sticky-count">{quiz.stickyCount}</div>
+          <div className="quiz-thumbnail">
+            <img src={quiz.thumbnail} alt="quiz thumbnail"/>
+          </div>
+          <div className="quiz-updated">{quiz.updated}</div>
+          <div className="quiz-answered">{quiz.answered}</div>
+          <div className="quiz-correct-count">{quiz.correctCount}</div>
+          <button className="edit-button" onClick={() => editQuiz(quiz)}>
+            編集
+          </button>
+        </div>
+      ))}
     </div>
   );
 };
 
-export default Home;
+export default QuizListPage;
