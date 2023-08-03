@@ -30,17 +30,21 @@ const QuizCreatePage = () => {
     setQuizName(value);
     setSaveButtonDisabled(value.trim() === ''); // テキストボックスが空欄でない場合、保存ボタンと読込ボタンを有効にする
   };
-
+  
   const handleImageSelect = (event) => {
     const imageFile = event.target.files[0];
-
+  
     if (imageFile) {
-      const imageUrl = URL.createObjectURL(imageFile);
-      setSelectedImage(imageUrl);
-      // 選択した画像のパス情報をセッションストレージに保存
-      sessionStorage.setItem('selectedImagePath', imageUrl);
+      const reader = new FileReader();
+      reader.onloadend = function () {
+        const base64Image = reader.result;
+        setSelectedImage(base64Image);
+        // 選択した画像のパス情報をセッションストレージに保存
+        sessionStorage.setItem('selectedImagePath', base64Image);
+      };
+      reader.readAsDataURL(imageFile);
     }
-  };
+  };  
 
   const handleImageClick = (event) => {
     var centering = 50
