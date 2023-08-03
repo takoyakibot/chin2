@@ -25,7 +25,7 @@ h1 {
 
 .image-select {
   width: 600px;
-  height: auto;
+  min-height: 600px;
   display: block;
   margin-bottom: 20px;
 }
@@ -155,4 +155,12 @@ h1 {
   font-size: 16px;
   margin: 4px 2px;
   cursor: pointer;
+}
+
+.reset-quiz-button {
+  /* ここにボタンのスタイルを適用 */
+}
+
+.overlay {
+  /* ここにオーバーレイのスタイルを適用 */
 }

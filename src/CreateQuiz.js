@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import './style.css';
 import Overlay from './Overlay';
 
-const CreateQuiz = () => {
+const QuizCreatePage = () => {
   const [selectedImage, setSelectedImage] = useState(null);
   const [quizInfo, setQuizInfo] = useState([]); // フセンの情報とクイズの回答を保持するステート
   const [showRectangle, setShowRectangle] = useState(false);
@@ -262,4 +262,4 @@ const CreateQuiz = () => {
   );
 };
 
-export default CreateQuiz;
+export default QuizCreatePage;
