@@ -155,9 +155,13 @@ const QuizCreatePage = () => {
     const foundQuiz = savedQuizInfo.find((info) => info.quizName === quizName);
 
     if (foundQuiz) {
-      // クイズ情報が見つかった場合、画面に読み込んで表示する
-    setSelectedImage(foundQuiz.selectedImage);
-    setQuizInfo(foundQuiz.fusens); 
+      // クイズ情報が見つかった場合、
+      const confirmed = window.confirm('現在の状態を破棄して、' + quizName + 'の情報を読み込みますか？');
+      if (!confirmed) return; // キャンセルされた場合は何もしない
+
+      // 画面に読み込んで表示する
+      setSelectedImage(foundQuiz.selectedImage);
+      setQuizInfo(foundQuiz.fusens); 
 
       alert('クイズ情報を読み込みました。');
     } else {
