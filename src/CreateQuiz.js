@@ -14,13 +14,15 @@ const QuizCreatePage = () => {
 
   // ページロード時にセッションストレージから保存された画像パス情報とフセン情報を取得
   useEffect(() => {
-    const savedImagePath = sessionStorage.getItem('selectedImagePath');
-    const savedQuizInfo = sessionStorage.getItem('quizInfo');
-    if (savedImagePath) {
-      setSelectedImage(savedImagePath);
-    }
-    if (savedQuizInfo) {
-      setQuizInfo(JSON.parse(savedQuizInfo));
+    const savedData = sessionStorage.getItem('savedData');
+    if (savedData) {
+      const { selectedImagePath, quizInfo } = JSON.parse(savedData);
+      if (selectedImagePath) {
+        setSelectedImage(selectedImagePath);
+      }
+      if (quizInfo) {
+        setQuizInfo(quizInfo);
+      }
     }
   }, []);
 
@@ -70,7 +72,10 @@ const QuizCreatePage = () => {
     setQuizInfo(updatedQuizInfo);
     setShowRectangle(false); // 仮フセンを追加したら非表示にする
     // 更新したフセン情報を保存
-    sessionStorage.setItem('quizInfo', JSON.stringify(updatedQuizInfo));
+    sessionStorage.setItem('savedData', JSON.stringify({
+      selectedImagePath: selectedImage,
+      quizInfo: updatedQuizInfo,
+    }));
     // クイズ回答を初期値に戻す
     setQuizAnswer('YES');
   };
@@ -91,7 +96,10 @@ const QuizCreatePage = () => {
       setQuizInfo(newQuizInfo);
       setShowRectangle(false); // 仮フセンを追加したら非表示にする
       // 更新したフセン情報を保存
-      sessionStorage.setItem('quizInfo', JSON.stringify(newQuizInfo));
+      sessionStorage.setItem('savedData', JSON.stringify({
+        selectedImagePath: selectedImage,
+        quizInfo: newQuizInfo,
+      }));
     }
   };
 
