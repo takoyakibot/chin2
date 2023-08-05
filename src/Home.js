@@ -14,12 +14,12 @@ const QuizListPage = () => {
   }, []);
 
   const editQuiz = (quiz) => {
-    sessionStorage.setItem('quizToEdit', JSON.stringify(quiz));
+    sessionStorage.setItem('savedData', JSON.stringify(quiz)); // キーを'savedData'に変更
     // route to QuizCreate page
   };
 
   const createNewQuiz = () => {
-    sessionStorage.removeItem('quizToEdit'); // 情報をクリア！
+    sessionStorage.removeItem('savedData'); // キーを'savedData'に変更, 情報をクリア！
     // route to QuizCreate page
   };
 

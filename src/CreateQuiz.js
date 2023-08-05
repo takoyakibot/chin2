@@ -16,12 +16,19 @@ const QuizCreatePage = () => {
   useEffect(() => {
     const savedData = sessionStorage.getItem('savedData');
     if (savedData) {
-      const { selectedImagePath, quizInfo } = JSON.parse(savedData);
-      if (selectedImagePath) {
-        setSelectedImage(selectedImagePath);
+      const { quizName, selectedImage, quizInfo } = JSON.parse(savedData);
+      console.log(`savedData: ${savedData}`);
+      console.log(`quizName: ${quizName}`);
+      console.log(`selectedImage: ${selectedImage}`);
+      console.log(`quizInfo: ${quizInfo}`);
+      if (selectedImage) {
+        setSelectedImage(selectedImage);
       }
       if (quizInfo) {
         setQuizInfo(quizInfo);
+      }
+      if (quizName) {
+        setQuizName(quizName);
       }
     }
   }, []);
@@ -42,7 +49,7 @@ const QuizCreatePage = () => {
         const base64Image = reader.result;
         setSelectedImage(base64Image);
         // 選択した画像のパス情報をセッションストレージに保存
-        sessionStorage.setItem('selectedImagePath', base64Image);
+        sessionStorage.setItem('selectedImage', base64Image);
       };
       reader.readAsDataURL(imageFile);
     }
@@ -73,7 +80,7 @@ const QuizCreatePage = () => {
     setShowRectangle(false); // 仮フセンを追加したら非表示にする
     // 更新したフセン情報を保存
     sessionStorage.setItem('savedData', JSON.stringify({
-      selectedImagePath: selectedImage,
+      selectedImage: selectedImage,
       quizInfo: updatedQuizInfo,
     }));
     // クイズ回答を初期値に戻す
@@ -97,7 +104,7 @@ const QuizCreatePage = () => {
       setShowRectangle(false); // 仮フセンを追加したら非表示にする
       // 更新したフセン情報を保存
       sessionStorage.setItem('savedData', JSON.stringify({
-        selectedImagePath: selectedImage,
+        selectedImage: selectedImage,
         quizInfo: newQuizInfo,
       }));
     }
@@ -129,12 +136,12 @@ const QuizCreatePage = () => {
       // クイズ名が存在する場合、対応するクイズ情報を上書きする
       newQuizInfo = savedQuizInfo.map((info) =>
         info.quizName === quizName
-          ? { quizName, selectedImage, fusens: quizInfo }
+          ? { quizName, selectedImage, quizInfo: quizInfo }
           : info
       );
     } else {
       // クイズ名が存在しない場合、新たにクイズ情報を追加する
-      newQuizInfo = [...savedQuizInfo, { quizName, selectedImage, fusens: quizInfo }];
+      newQuizInfo = [...savedQuizInfo, { quizName, selectedImage, quizInfo: quizInfo }];
     }
 
     localStorage.setItem('quizInfo', JSON.stringify(newQuizInfo));
@@ -161,7 +168,7 @@ const QuizCreatePage = () => {
 
       // 画面に読み込んで表示する
       setSelectedImage(foundQuiz.selectedImage);
-      setQuizInfo(foundQuiz.fusens); 
+      setQuizInfo(foundQuiz.quizInfo); 
 
       alert('クイズ情報を読み込みました。');
     } else {
