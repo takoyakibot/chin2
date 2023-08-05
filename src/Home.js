@@ -25,10 +25,10 @@ const QuizListPage = () => {
 
   return (
     <div>
-        <Link to="/create">
-      <button onClick={createNewQuiz} className="new-quiz-button">
+      <Link to="/create">
+        <button onClick={createNewQuiz} className="new-quiz-button">
           クイズ新規作成
-      </button>
+        </button>
       </Link>
 
       {quizzes.map((quiz, index) => (
