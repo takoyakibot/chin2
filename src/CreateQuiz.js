@@ -44,6 +44,14 @@ const QuizCreatePage = () => {
     const imageFile = event.target.files[0];
   
     if (imageFile) {
+      // サイズ上限を200KBとする
+      const maxSize = 200 * 1024;
+  
+      // ファイルサイズが上限を超えているかチェック
+      if (imageFile.size > maxSize) {
+        alert('画像ファイルのサイズは一旦200KB以下である必要があります。');
+        return;
+      }
       const reader = new FileReader();
       reader.onloadend = function () {
         const base64Image = reader.result;
