@@ -7,7 +7,6 @@ const QuizCreatePage = () => {
   const [quizInfo, setQuizInfo] = useState([]); // フセンの情報とクイズの回答を保持するステート
   const [showRectangle, setShowRectangle] = useState(false);
   const [rectanglePosition, setRectanglePosition] = useState({ x: 0, y: 0 });
-  const [quizAnswer, setQuizAnswer] = useState('YES'); // クイズの回答を保持するステート
   const [showOverlay, setShowOverlay] = useState(false);
   const [quizName, setQuizName] = useState(''); // クイズの名前を保持するステート
   const [saveButtonDisabled, setSaveButtonDisabled] = useState(true); // 保存ボタンの非アクティブ状態を管理するステート
@@ -112,8 +111,6 @@ const QuizCreatePage = () => {
       selectedImage: selectedImage,
       quizInfo: updatedQuizInfo,
     }));
-    // クイズ回答を初期値に戻す
-    setQuizAnswer('YES');
   };
 
   // Enterキーのイベントハンドラを設定
