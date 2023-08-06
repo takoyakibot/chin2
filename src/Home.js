@@ -26,7 +26,7 @@ const QuizListPage = () => {
   return (
     <div className="container">
       <div className="row mb-4">
-        <div className="col-2">
+        <div className="col col-2">
           <Link to="/create">
             <button onClick={createNewQuiz} className="btn btn-info new-quiz-button">
               クイズ新規作成
@@ -38,8 +38,8 @@ const QuizListPage = () => {
         <div className="row quiz-header">
           <div className="col col-1">No</div>
           <div className="col col-3">登録名</div>
-          <div className="col col-1">付箋枚数</div>
-          <div className="col col-1">イメージ</div>
+          <div className="col col-1">付箋</div>
+          <div className="col col-1"></div>
           <div className="col col-2">登録日</div>
           <div className="col col-2">回答日</div>
           <div className="col col-1">正解数</div>
@@ -60,7 +60,7 @@ const QuizListPage = () => {
           <div className="col col-1 d-flex align-items-center justify-content-center">{quiz.correctCount}</div>
           <div className="col col-1 d-flex align-items-center justify-content-center">
             <Link to="/create">
-              <button className="edit-button" onClick={() => editQuiz(quiz)}>
+              <button className="btn btn-success" onClick={() => editQuiz(quiz)}>
                 編集
               </button>
             </Link>

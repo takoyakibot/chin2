@@ -17,7 +17,7 @@ const QuizCreatePage = () => {
   useEffect(() => {
     const savedData = sessionStorage.getItem('savedData');
     if (savedData) {
-      const { quizName, selectedImage, quizInfo } = JSON.parse(savedData);
+      const { quizName, selectedImage, thumbnail, quizInfo } = JSON.parse(savedData);
       if (selectedImage) {
         setSelectedImage(selectedImage);
       }
@@ -27,6 +27,9 @@ const QuizCreatePage = () => {
       if (quizName) {
         setQuizName(quizName);
         setSaveButtonDisabled(quizName.trim() === '');
+      }
+      if (thumbnail) {
+        setThumbnail(thumbnail);
       }
     }
   }, []);
@@ -271,7 +274,7 @@ const QuizCreatePage = () => {
                   </div>
                   <div className="col d-flex align-items-center justify-content-center">
                     <button onClick={() => handleRemoveRectangle(index)}
-                       className="btn btn-danger btn-remove" style={{ padding: '0 12px' }}>
+                       className="btn btn-danger btn-remove">
                       削除
                     </button>
                   </div>
