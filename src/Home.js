@@ -24,27 +24,41 @@ const QuizListPage = () => {
   };
 
   return (
-    <div>
-      <Link to="/create">
-        <button onClick={createNewQuiz} className="new-quiz-button">
-          クイズ新規作成
-        </button>
-      </Link>
-
-      {quizzes.map((quiz, index) => (
-        <div key={index} className="quiz-row">
-          <div className="quiz-index">{index + 1}</div>
-          <div className="quiz-name">
+    <div className="container">
+      <div className="row mb-4">
+        <div className="col-2">
+          <Link to="/create">
+            <button onClick={createNewQuiz} className="btn btn-info new-quiz-button">
+              クイズ新規作成
+            </button>
+          </Link>
+        </div>
+      </div>
+      <div className="m-2">
+        <div className="row quiz-header">
+          <div className="col col-1">No</div>
+          <div className="col col-3">登録名</div>
+          <div className="col col-1">付箋枚数</div>
+          <div className="col col-1">イメージ</div>
+          <div className="col col-2">登録日</div>
+          <div className="col col-2">回答日</div>
+          <div className="col col-1">正解数</div>
+          <div className="col col-1">編集</div>
+        </div>
+        {quizzes.map((quiz, index) => (
+        <div key={index} className="row quiz-item">
+          <div className="col col-1 d-flex align-items-center justify-content-center">{index + 1}</div>
+          <div className="col col-3 d-flex align-items-center justify-content-center">
             <Link to={`/answer?quizName=${quiz.quizName}`}>{quiz.quizName}</Link>
           </div>
-          <div className="quiz-sticky-count">{quiz.stickyCount}</div>
-          <div className="quiz-thumbnail">
-            <img src={quiz.thumbnail} alt="quiz thumbnail"/>
+          <div className="col col-1 d-flex align-items-center justify-content-center">{quiz.quizInfo.length}</div>
+          <div className="col col-1 d-flex align-items-center justify-content-center">
+            <img src={quiz.thumbnail} alt="quiz thumbnail" className="thumbnail"/>
           </div>
-          <div className="quiz-updated">{quiz.updated}</div>
-          <div className="quiz-answered">{quiz.answered}</div>
-          <div className="quiz-correct-count">{quiz.correctCount}</div>
-          <div>
+          <div className="col col-2 d-flex align-items-center justify-content-center">{quiz.updDate}</div>
+          <div className="col col-2 d-flex align-items-center justify-content-center">{quiz.answered}</div>
+          <div className="col col-1 d-flex align-items-center justify-content-center">{quiz.correctCount}</div>
+          <div className="col col-1 d-flex align-items-center justify-content-center">
             <Link to="/create">
               <button className="edit-button" onClick={() => editQuiz(quiz)}>
                 編集
@@ -52,7 +66,8 @@ const QuizListPage = () => {
             </Link>
           </div>
         </div>
-      ))}
+        ))}
+      </div>
     </div>
   );
 };

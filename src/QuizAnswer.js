@@ -50,38 +50,38 @@ const QuizAnswerPage = () => {
       <button onClick={resetQuiz} className="reset-quiz-button">リセット</button>
 
       // プレイヤーの追加ボタンを作成しよう
-<button onClick={() => setPlayers([...players, { name: '', answer: 'No' }])}>プレイヤー追加</button>
+      <button onClick={() => setPlayers([...players, { name: '', answer: 'No' }])}>プレイヤー追加</button>
 
-// 各プレイヤーの名前入力と回答ボタンを作成しよう
-{players.map((player, i) => (
-  <div key={i}>
-    <input 
-      type="text" 
-      value={player.name} 
-      onChange={e => {
-        const newPlayers = [...players];
-        newPlayers[i].name = e.target.value;
-        setPlayers(newPlayers);
-      }} 
-    />
-    <button 
-      onMouseDown={() => {
-        // 仮フセンを表示するためのロジックをここに追加
-      }} 
-      onMouseUp={() => {
-        // 仮フセンを非表示にするためのロジックをここに追加
-      }} 
-      onClick={() => {
-        // プレイヤーの回答処理を行うためのロジックをここに追加
-        const newPlayers = [...players];
-        newPlayers[i].answer = 'Yes'; // ここは実際の回答に応じて変更する
-        setPlayers(newPlayers);
-      }}
-    >
-      回答
-    </button>
-  </div>
-))}
+      // 各プレイヤーの名前入力と回答ボタンを作成しよう
+      {players.map((player, i) => (
+        <div key={i}>
+          <input 
+            type="text" 
+            value={player.name} 
+            onChange={e => {
+              const newPlayers = [...players];
+              newPlayers[i].name = e.target.value;
+              setPlayers(newPlayers);
+            }} 
+          />
+          <button 
+            onMouseDown={() => {
+              // 仮フセンを表示するためのロジックをここに追加
+            }} 
+            onMouseUp={() => {
+              // 仮フセンを非表示にするためのロジックをここに追加
+            }} 
+            onClick={() => {
+              // プレイヤーの回答処理を行うためのロジックをここに追加
+              const newPlayers = [...players];
+              newPlayers[i].answer = 'Yes'; // ここは実際の回答に応じて変更する
+              setPlayers(newPlayers);
+            }}
+          >
+            回答
+          </button>
+        </div>
+      ))}
     </div>
   );
 };

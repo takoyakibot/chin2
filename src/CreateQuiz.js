@@ -11,16 +11,13 @@ const QuizCreatePage = () => {
   const [showOverlay, setShowOverlay] = useState(false);
   const [quizName, setQuizName] = useState(''); // クイズの名前を保持するステート
   const [saveButtonDisabled, setSaveButtonDisabled] = useState(true); // 保存ボタンの非アクティブ状態を管理するステート
+  const [thumbnail, setThumbnail] = useState(null); // サムネイルを保存するステート
 
   // ページロード時にセッションストレージから保存された画像パス情報とフセン情報を取得
   useEffect(() => {
     const savedData = sessionStorage.getItem('savedData');
     if (savedData) {
       const { quizName, selectedImage, quizInfo } = JSON.parse(savedData);
-      console.log(`savedData: ${savedData}`);
-      console.log(`quizName: ${quizName}`);
-      console.log(`selectedImage: ${selectedImage}`);
-      console.log(`quizInfo: ${quizInfo}`);
       if (selectedImage) {
         setSelectedImage(selectedImage);
       }
@@ -29,6 +26,7 @@ const QuizCreatePage = () => {
       }
       if (quizName) {
         setQuizName(quizName);
+        setSaveButtonDisabled(quizName.trim() === '');
       }
     }
   }, []);
@@ -56,8 +54,28 @@ const QuizCreatePage = () => {
       reader.onloadend = function () {
         const base64Image = reader.result;
         setSelectedImage(base64Image);
-        // 選択した画像のパス情報をセッションストレージに保存
-        sessionStorage.setItem('selectedImage', base64Image);
+
+        // サムネイル作成
+        const imgElement = document.createElement('img');
+        imgElement.src = reader.result;
+        
+        const canvas = document.createElement('canvas');
+        const ctx = canvas.getContext('2d');
+        imgElement.onload = () => {
+          // 長辺を設定する
+          const pnt = 10;
+          if (imgElement.width > imgElement.height) {
+            canvas.width = pnt;
+            canvas.height = imgElement.height * (pnt / imgElement.width);
+          } else {
+            canvas.height = pnt;
+            canvas.width = imgElement.width * (pnt / imgElement.height);
+          }
+          ctx.drawImage(imgElement, 0, 0, canvas.width, canvas.height);
+          
+          // サムネイルをBase64に変換
+          setThumbnail(canvas.toDataURL());
+        };
       };
       reader.readAsDataURL(imageFile);
     }
@@ -136,6 +154,7 @@ const QuizCreatePage = () => {
     const savedQuizInfo = JSON.parse(localStorage.getItem('quizInfo')) || [];
     const foundQuiz = savedQuizInfo.find((info) => info.quizName === quizName);
 
+    var updDate = new Date();
     let newQuizInfo = [];
     if (foundQuiz) {
       const confirmed = window.confirm('すでに存在するクイズ名です。上書き保存しますか？');
@@ -144,12 +163,12 @@ const QuizCreatePage = () => {
       // クイズ名が存在する場合、対応するクイズ情報を上書きする
       newQuizInfo = savedQuizInfo.map((info) =>
         info.quizName === quizName
-          ? { quizName, selectedImage, quizInfo: quizInfo }
+          ? { quizName, selectedImage, thumbnail, updDate, quizInfo: quizInfo }
           : info
       );
     } else {
       // クイズ名が存在しない場合、新たにクイズ情報を追加する
-      newQuizInfo = [...savedQuizInfo, { quizName, selectedImage, quizInfo: quizInfo }];
+      newQuizInfo = [...savedQuizInfo, { quizName, selectedImage, thumbnail, updDate, quizInfo: quizInfo }];
     }
 
     localStorage.setItem('quizInfo', JSON.stringify(newQuizInfo));
