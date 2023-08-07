@@ -1,13 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import './style.css';
-import Overlay from './Overlay';
 
 const QuizCreatePage = () => {
   const [selectedImage, setSelectedImage] = useState(null);
   const [quizInfo, setQuizInfo] = useState([]); // フセンの情報とクイズの回答を保持するステート
   const [showRectangle, setShowRectangle] = useState(false);
   const [rectanglePosition, setRectanglePosition] = useState({ x: 0, y: 0 });
-  const [showOverlay, setShowOverlay] = useState(false);
   const [quizName, setQuizName] = useState(''); // クイズの名前を保持するステート
   const [saveButtonDisabled, setSaveButtonDisabled] = useState(true); // 保存ボタンの非アクティブ状態を管理するステート
   const [thumbnail, setThumbnail] = useState(null); // サムネイルを保存するステート
@@ -175,9 +173,6 @@ const QuizCreatePage = () => {
 
     // 保存したよメッセージ
     alert('クイズ情報を保存しました。');
-
-    // 目いっぱいの祝福を君に
-    setShowOverlay(true);
   };
 
   // 読込ボタンがクリックされたときに実行される関数
@@ -202,11 +197,6 @@ const QuizCreatePage = () => {
       alert('指定されたクイズ名の情報が見つかりません。');
     }
   };
-
-  // Overlayを閉じる関数
-  const handleCloseOverlay = () => {
-    setShowOverlay(false);
-  };
   
   return (
     <div className="container">
@@ -224,7 +214,7 @@ const QuizCreatePage = () => {
               )}
               {quizInfo.map((info, index) => (
                 <div key={index} style={{ position: 'absolute', top: `${info.y}px`, left: `${info.x}px` }}>
-                  <div className="rectangle"></div>
+                  <div className="rectangle rectangle-create"></div>
                   <div className="index-text">{index + 1}</div>
                 </div>
               ))}
@@ -306,8 +296,6 @@ const QuizCreatePage = () => {
           </div>
         </div>
       </div>
-      {/* アニメーションのオーバーレイ */}
-      {showOverlay && <Overlay onCloseOverlay={handleCloseOverlay} />}
     </div>
   );
 };

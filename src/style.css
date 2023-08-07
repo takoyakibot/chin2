@@ -87,13 +87,17 @@ h1 {
   height: 100px;
   background-color: #ffffff;
   border: 1px solid #000000;
-  pointer-events: none; /* マウスイベントをフセンが遮らないようにする */
   text-align: center;
   line-height: 100px;
   font-size: 14px;
 }
 
+.rectangle-create {
+  pointer-events: none;
+}
+
 .index-text {
+  pointer-events: none;
   position: absolute;
   top: 10px;
   left: 18px;
