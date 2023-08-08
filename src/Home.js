@@ -14,13 +14,15 @@ const QuizListPage = () => {
   }, []);
 
   const editQuiz = (quiz) => {
-    sessionStorage.setItem('savedData', JSON.stringify(quiz)); // キーを'savedData'に変更
-    // route to QuizCreate page
+    sessionStorage.setItem('savedData', JSON.stringify(quiz));
+  };
+
+  const answerQuiz = (quiz) => {
+    sessionStorage.setItem('answerData', JSON.stringify(quiz));
   };
 
   const createNewQuiz = () => {
     sessionStorage.removeItem('savedData'); // キーを'savedData'に変更, 情報をクリア！
-    // route to QuizCreate page
   };
 
   return (
@@ -66,7 +68,7 @@ const QuizListPage = () => {
           <div className="col col-1 d-flex align-items-center justify-content-center">{quiz.correctCount}</div>
           <div className="col col-1 d-flex align-items-center justify-content-center">
             <Link to="/answer">
-              <button className="btn btn-danger" onClick={() => editQuiz(quiz)}>
+              <button className="btn btn-danger" onClick={() => answerQuiz(quiz)}>
                 回答
               </button>
             </Link>
