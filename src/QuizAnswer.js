@@ -1,17 +1,16 @@
 import React, { useEffect, useState } from 'react';
 import Overlay from './Overlay';
 
-const QuizCreatePage = () => {
+const QuizAnswerPage = () => {
   const [selectedImage, setSelectedImage] = useState(null);
   const [quizInfo, setQuizInfo] = useState([]); // フセンの情報とクイズの回答を保持するステート
   const [selectRectangle, setSelectRectangle] = useState(false);
-  const [rectanglePosition, setRectanglePosition] = useState({ x: 0, y: 0 });
-  const [quizAnswer, setQuizAnswer] = useState('YES'); // クイズの回答を保持するステート
   const [showOverlay, setShowOverlay] = useState(false);
   const [quizName, setQuizName] = useState(''); // クイズの名前を保持するステート
   const [saveButtonDisabled, setSaveButtonDisabled] = useState(true); // 保存ボタンの非アクティブ状態を管理するステート
-  const [thumbnail, setThumbnail] = useState(null); // サムネイルを保存するステート
   const [selectedAnswer, setSelectedAnswer] = useState('NO');
+  const [selectedIndex, setSelectedIndex] = useState(null);
+  const [correctAnswer, setCorrectAnswer] = useState(null);
 
   // ページロード時にセッションストレージから保存された画像パス情報とフセン情報を取得
   useEffect(() => {
@@ -42,12 +41,14 @@ const QuizCreatePage = () => {
   const handleRectangleClick = (index) => {
     // 一旦false
     var isEnabled = false;
+    var sIndex = null;
 
     // クリックしたRectangleのcolorを変更する
     const updateQuizInfo = quizInfo.map((item, i) => {
       if (index === i && item.color !== 'pink') {
         // pinkにした場合はボタンを押せるようにする
         isEnabled = true;
+        sIndex = index;
         return {
             ...item,
             color: 'pink'
@@ -60,11 +61,13 @@ const QuizCreatePage = () => {
       }
     });
 
+    setSelectedIndex(sIndex);
     setSelectRectangle(isEnabled);
     setQuizInfo(updateQuizInfo);
   }
 
   const handleImageClick = (event) => {
+    setSelectedIndex(null);
     setSelectRectangle(false);
     // クリックしたRectangleのcolorを変更する
     const updateQuizInfo = quizInfo.map((item, i) => {
@@ -77,17 +80,33 @@ const QuizCreatePage = () => {
     setQuizInfo(updateQuizInfo);
   };
 
-  const handleQuizAnser = (e) => {
-  };
+  const handleQuizAnser = () => { // 回答ボタン押下
+    if (selectedIndex === null) return; // selectedIndexがnullの場合は何もしない
+  
+    // quizInfoの選択したindexに対応する部分を更新
+    const updatedQuizInfo = quizInfo.map((item, index) => {
+      if (index === selectedIndex) {
+        return {
+          ...item,
+          answered: selectedAnswer,
+        };
+      } else {
+        return item;
+      }
+    });
 
-  const handleQuizAnswerChange = (event, index) => {
-    const { value } = event.target;
-    // 対象のフセンの回答を更新
-    const updatedQuizInfo = [...quizInfo];
-    updatedQuizInfo[index].answer = value;
     setQuizInfo(updatedQuizInfo);
-    // 更新したフセン情報を保存
-    sessionStorage.setItem('quizInfo', JSON.stringify(updatedQuizInfo));
+
+    setCorrectAnswer(updatedQuizInfo[selectedIndex].answer)
+
+    // オーバーレイを表示
+    setShowOverlay(true);
+  };
+  
+
+  const handleSelectedAnswerChange = (event) => {
+    const { value } = event.target;
+    setSelectedAnswer(value);
   };
 
 
@@ -129,7 +148,7 @@ const QuizCreatePage = () => {
                 一覧
               </div>
               <div className="col d-flex align-items-center justify-content-center">
-                <select value={selectedAnswer}>
+                <select value={selectedAnswer} onChange={(e) => handleSelectedAnswerChange(e)}>
                   <option value="YES">YES</option>
                   <option value="NO">NO</option>
                 </select>
@@ -154,7 +173,7 @@ const QuizCreatePage = () => {
                   <div className="col col-2 d-flex align-items-center justify-content-center">
                     {index + 1}</div>
                   <div className="col d-flex align-items-center justify-content-center">
-                    {info.answered && <select disabled="true" value={info.answered} onChange={(e) => handleQuizAnswerChange(e, index)}>
+                    {info.answered && <select disabled="true" value={info.answered}>
                       <option value="YES">YES</option>
                       <option value="NO">NO</option>
                     </select>}
@@ -170,9 +189,9 @@ const QuizCreatePage = () => {
         </div>
       </div>
       {/* アニメーションのオーバーレイ */}
-      {showOverlay && <Overlay onCloseOverlay={handleCloseOverlay} />}
+      {showOverlay && <Overlay correctAnswer={correctAnswer} onCloseOverlay={handleCloseOverlay} />}
     </div>
   );
 };
 
-export default QuizCreatePage;
+export default QuizAnswerPage;
