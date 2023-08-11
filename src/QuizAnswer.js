@@ -130,12 +130,15 @@ const QuizAnswerPage = () => {
             <div style={{ position: 'relative' }}>
               <img src={selectedImage} alt="Selected" className="image-select"
                onClick={handleImageClick}/>
+              {/* フセン出力 */}
               {quizInfo.map((info, index) => (
-                <div key={index} style={{ position: 'absolute', top: `${info.y}px`, left: `${info.x}px` }}
-                onClick={() => handleRectangleClick(index)}>
-                  <div className="rectangle" style={{ backgroundColor: info.color }}></div>
-                  <div className="index-text">{index + 1}</div>
-                </div>
+                !info.answered && (
+                  <div key={index} style={{ position: 'absolute', top: `${info.y}px`, left: `${info.x}px` }}
+                  onClick={() => handleRectangleClick(index)}>
+                    <div className="rectangle" style={{ backgroundColor: info.color }}></div>
+                    <div className="index-text">{index + 1}</div>
+                  </div>
+                )
               ))}
             </div>
           )}
