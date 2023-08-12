@@ -97,10 +97,22 @@ const QuizAnswerPage = () => {
 
     setQuizInfo(updatedQuizInfo);
 
-    setCorrectAnswer(updatedQuizInfo[selectedIndex].answer)
+    // ここで必要なデータをセッションストレージに保存
+    const answerData = {
+      quizName,
+      selectedImage,
+      quizInfo: updatedQuizInfo
+    };
+    sessionStorage.setItem('answerData', JSON.stringify(answerData));
+
+    setCorrectAnswer(updatedQuizInfo[selectedIndex].answer);
 
     // オーバーレイを表示
     setShowOverlay(true);
+
+    // 選択を解除
+    setSelectedIndex(null);
+    setSelectRectangle(false);
   };
   
 
@@ -132,10 +144,10 @@ const QuizAnswerPage = () => {
                onClick={handleImageClick}/>
               {/* フセン出力 */}
               {quizInfo.map((info, index) => (
-                !info.answered && (
+                (!info.answered || selectedIndex === index) && (
                   <div key={index} style={{ position: 'absolute', top: `${info.y}px`, left: `${info.x}px` }}
                   onClick={() => handleRectangleClick(index)}>
-                    <div className="rectangle" style={{ backgroundColor: info.color }}></div>
+                    <div className="rectangle" style={{ backgroundColor: info.color, opacity: (selectedIndex === index && info.answered) ? 0.5 : 1 }}></div>
                     <div className="index-text">{index + 1}</div>
                   </div>
                 )
@@ -189,6 +201,16 @@ const QuizAnswerPage = () => {
               ))}
             </div>
           </div>
+            <div className="row footer-row">
+              {/* テキストボックス */}
+              <div className="col col-6">
+                <input
+                  type="text" className="quiz-name-input"
+                  disabled={true} value={quizName}
+                  onChange={handleQuizNameChange}
+                />
+              </div>
+            </div>
         </div>
       </div>
       {/* アニメーションのオーバーレイ */}
