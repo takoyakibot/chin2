@@ -152,8 +152,14 @@ h1 {
   padding: 2px 8px;
 }
 
-.reset-quiz-button {
-  /* ここにボタンのスタイルを適用 */
+.quiz-list-button-row {
+  text-align: left;
+}
+
+.new-quiz-button {
+}
+.resume-quiz-button {
+  margin-left: 10px;
 }
 
 .overlay {

@@ -8,9 +8,11 @@ const getQuizzesFromLocalStorage = () => {
 
 const QuizListPage = () => {
   const [quizzes, setQuizzes] = useState(getQuizzesFromLocalStorage());
+  const [answerData, setAnswerData] = useState(null);
 
   useEffect(() => {
     setQuizzes(getQuizzesFromLocalStorage());
+    setAnswerData(sessionStorage.getItem('answerData'));
   }, []);
 
   const editQuiz = (quiz) => {
@@ -22,18 +24,25 @@ const QuizListPage = () => {
   };
 
   const createNewQuiz = () => {
-    sessionStorage.removeItem('savedData'); // キーを'savedData'に変更, 情報をクリア！
+    sessionStorage.removeItem('savedData');
   };
+
+  const resumeButton = (
+    <button disabled={answerData ? false : true } className="btn btn-warning resume-quiz-button">
+      回答を再開
+    </button>
+);
 
   return (
     <div className="container">
-      <div className="row mb-4">
-        <div className="col col-2">
+      <div className="row mb-4 d-flex align-items-center quiz-list-button-row">
+        <div className="col">
           <Link to="/create">
             <button onClick={createNewQuiz} className="btn btn-info new-quiz-button">
               クイズ新規作成
             </button>
           </Link>
+          {answerData ? <Link to="/answer">{resumeButton}</Link> : resumeButton}
         </div>
       </div>
       <div className="m-2">
@@ -64,8 +73,7 @@ const QuizListPage = () => {
               </button>
             </Link>
           </div>
-          <div className="col col-2 d-flex align-items-center justify-content-center">{quiz.answered}</div>
-          <div className="col col-1 d-flex align-items-center justify-content-center">{quiz.correctCount}</div>
+          <div className="col col-2 d-flex align-items-center justify-content-center">{quiz.answeredDate}</div>
           <div className="col col-1 d-flex align-items-center justify-content-center">
             <Link to="/answer">
               <button className="btn btn-danger" onClick={() => answerQuiz(quiz)}>
