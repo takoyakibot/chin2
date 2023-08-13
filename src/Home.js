@@ -20,6 +20,18 @@ const QuizListPage = () => {
   };
 
   const answerQuiz = (quiz, index) => {
+    // セッションがある場合は確認
+    var data = sessionStorage.getItem('answerData')
+    if (data) {
+      // 確認メッセージを表示
+      const isConfirmed = window.confirm('前回の回答情報が残っています。新たに始めると前回の情報は削除されますがよろしいですか？');
+      
+      // キャンセルが押された場合、関数を終了
+      if (!isConfirmed) {
+        return;
+      }
+    }
+
     const updatedQuizInfo = [...quizzes];
     const currentDate = new Date().toISOString(); // 現在日時を取得
     updatedQuizInfo[index].answerDate = currentDate; // answerDateを更新
