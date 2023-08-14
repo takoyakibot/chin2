@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import './style.css';
 
 const getQuizzesFromLocalStorage = () => {
@@ -9,6 +9,7 @@ const getQuizzesFromLocalStorage = () => {
 const QuizListPage = () => {
   const [quizzes, setQuizzes] = useState(getQuizzesFromLocalStorage());
   const [answerData, setAnswerData] = useState(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
     setQuizzes(getQuizzesFromLocalStorage());
@@ -29,6 +30,9 @@ const QuizListPage = () => {
       if (!isConfirmed) {
         return;
       }
+
+      // ページ遷移
+      navigate('/answer');
     }
 
     const updatedQuizInfo = [...quizzes];
@@ -114,11 +118,9 @@ const QuizListPage = () => {
           </div>
           <div className="col col-2 d-flex align-items-center justify-content-center">{formatDate(quiz.answerDate)}</div>
           <div className="col col-1 d-flex align-items-center justify-content-center">
-            <Link to="/answer">
-              <button className="btn btn-danger" onClick={() => answerQuiz(quiz, index)}>
-                回答
-              </button>
-            </Link>
+            <button className="btn btn-danger" onClick={() => answerQuiz(quiz, index)}>
+              回答
+            </button>
           </div>
         </div>
         ))}
