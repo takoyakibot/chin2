@@ -2,12 +2,12 @@ import React, { useEffect, useState } from 'react';
 import Overlay from './Overlay';
 
 const QuizAnswerPage = () => {
+  const [quizName, setQuizName] = useState(''); // クイズの名前を保持するステート
   const [selectedImage, setSelectedImage] = useState(null);
+  const [stickerImage, setStickerImage] = useState(null);
   const [quizInfo, setQuizInfo] = useState([]); // フセンの情報とクイズの回答を保持するステート
   const [selectRectangle, setSelectRectangle] = useState(false);
   const [showOverlay, setShowOverlay] = useState(false);
-  const [quizName, setQuizName] = useState(''); // クイズの名前を保持するステート
-  const [saveButtonDisabled, setSaveButtonDisabled] = useState(true); // 保存ボタンの非アクティブ状態を管理するステート
   const [selectedAnswer, setSelectedAnswer] = useState('NO');
   const [selectedIndex, setSelectedIndex] = useState(null);
   const [correctAnswer, setCorrectAnswer] = useState(null);
@@ -17,16 +17,18 @@ const QuizAnswerPage = () => {
     const answerData = sessionStorage.getItem('answerData');
     if (answerData) {
       const parsedData = JSON.parse(answerData);
-      const { quizName, selectedImage, quizInfo } = parsedData;
+      const { quizName, selectedImage, stickerImage, quizInfo } = parsedData;
+      if (quizName) {
+        setQuizName(quizName);
+      }
       if (selectedImage) {
         setSelectedImage(selectedImage);
       }
+      if (stickerImage) {
+        setStickerImage(stickerImage);
+      }
       if (quizInfo) {
         setQuizInfo(quizInfo);
-      }
-      if (quizName) {
-        setQuizName(quizName);
-        setSaveButtonDisabled(quizName.trim() === '');
       }
     }
   }, []);
@@ -35,7 +37,6 @@ const QuizAnswerPage = () => {
   const handleQuizNameChange = (event) => {
     const { value } = event.target;
     setQuizName(value);
-    setSaveButtonDisabled(value.trim() === ''); // テキストボックスが空欄でない場合、保存ボタンと読込ボタンを有効にする
   };
   
   const handleRectangleClick = (index) => {
@@ -47,7 +48,7 @@ const QuizAnswerPage = () => {
     const updateQuizInfo = quizInfo.map((item, i) => {
       if (index === i && item.color !== 'pink') {
         // pinkにした場合はボタンを押せるようにする
-        isEnabled = true;
+        isEnabled = !item.answered;
         sIndex = index;
         return {
             ...item,
@@ -101,6 +102,7 @@ const QuizAnswerPage = () => {
     const answerData = {
       quizName,
       selectedImage,
+      stickerImage,
       quizInfo: updatedQuizInfo
     };
     sessionStorage.setItem('answerData', JSON.stringify(answerData));
@@ -121,13 +123,6 @@ const QuizAnswerPage = () => {
     setSelectedAnswer(value);
   };
 
-
-    // // 保存したよメッセージ
-    // alert('クイズ情報を保存しました。');
-
-    // // 目いっぱいの祝福を君に
-    // setShowOverlay(true);
-
   // Overlayを閉じる関数
   const handleCloseOverlay = () => {
     setShowOverlay(false);
@@ -144,14 +139,24 @@ const QuizAnswerPage = () => {
                onClick={handleImageClick}/>
               {/* フセン出力 */}
               {quizInfo.map((info, index) => (
-                (!info.answered || selectedIndex === index) && (
-                  <div key={index} style={{ position: 'absolute', top: `${info.y}px`, left: `${info.x}px` }}
-                  onClick={() => handleRectangleClick(index)}>
-                    <div className="rectangle" style={{ backgroundColor: info.color, opacity: (selectedIndex === index && info.answered) ? 0.5 : 1 }}></div>
-                    <div className="index-text">{index + 1}</div>
-                  </div>
-                )
-              ))}
+              (!info.answered || selectedIndex === index) && (
+                <div key={index} style={{ position: 'absolute', top: `${info.y}px`, left: `${info.x}px` }}
+                    onClick={() => handleRectangleClick(index)}>
+                  <div className="rectangle" style={{
+                    backgroundImage: stickerImage ? `url(${stickerImage})` : 'none',
+                    backgroundSize: 'cover',
+                    backgroundRepeat: 'no-repeat',
+                    backgroundColor: stickerImage ? 'transparent' :
+                      (selectedIndex === index || !info.answered ? info.color : 'transparent'),
+                    opacity: (selectedIndex === index && info.answered) ? 0.5 : 1,
+                    border: stickerImage ? 0 : '1px solid black' // 透明の場合の境界を示すため
+                  }}></div>
+                  {selectedIndex === index && <div className="rectangle" style={{backgroundColor: info.color, opacity: 0.5, border: 0}}>
+                  </div>}
+                  <div className="index-text">{index + 1}</div>
+                </div>
+              )
+            ))}
             </div>
           )}
         </div>

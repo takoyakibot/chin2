@@ -4,9 +4,9 @@ import './style.css';
 const QuizCreatePage = () => {
   const [quizName, setQuizName] = useState(''); // クイズの名前を保持するステート
   const [selectedImage, setSelectedImage] = useState(null);
-  const [quizInfo, setQuizInfo] = useState([]); // フセンの情報とクイズの回答を保持するステート
   const [thumbnail, setThumbnail] = useState(null); // サムネイルを保存するステート
   const [stickerImage, setStickerImage] = useState(null);
+  const [quizInfo, setQuizInfo] = useState([]); // フセンの情報とクイズの回答を保持するステート
   const [showRectangle, setShowRectangle] = useState(false);
   const [rectanglePosition, setRectanglePosition] = useState({ x: 0, y: 0 });
   const [saveButtonDisabled, setSaveButtonDisabled] = useState(true); // 保存ボタンの非アクティブ状態を管理するステート
@@ -32,7 +32,7 @@ const QuizCreatePage = () => {
         setThumbnail(thumbnail);
       }
       if (stickerImage) {
-        setThumbnail(stickerImage);
+        setStickerImage(stickerImage);
       }
       if (quizInfo) {
         setQuizInfo(quizInfo);

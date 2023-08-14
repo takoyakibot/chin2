@@ -84,9 +84,10 @@ const QuizListPage = () => {
       <div className="m-2">
         <div className="row quiz-header">
           <div className="col col-1">No</div>
-          <div className="col col-3">登録名</div>
-          <div className="col col-1">付箋</div>
-          <div className="col col-1"></div>
+          <div className="col col-2">登録名</div>
+          <div className="col col-1">設問数</div>
+          <div className="col col-1">画像</div>
+          <div className="col col-1">乳酸菌</div>
           <div className="col col-2">登録日</div>
           <div className="col col-1">編集</div>
           <div className="col col-2">回答日</div>
@@ -95,10 +96,13 @@ const QuizListPage = () => {
         {quizzes.map((quiz, index) => (
         <div key={index} className="row quiz-item">
           <div className="col col-1 d-flex align-items-center justify-content-center">{index + 1}</div>
-          <div className="col col-3 d-flex align-items-center justify-content-center">{quiz.quizName}</div>
+          <div className="col col-2 d-flex align-items-center justify-content-center">{quiz.quizName}</div>
           <div className="col col-1 d-flex align-items-center justify-content-center">{quiz.quizInfo.length}</div>
           <div className="col col-1 d-flex align-items-center justify-content-center">
             <img src={quiz.thumbnail} alt="quiz thumbnail" className="thumbnail"/>
+          </div>
+          <div className="col col-1 d-flex align-items-center justify-content-center">
+            {quiz.stickerImage && <img src={quiz.stickerImage} alt="sticker thumbnail" className="thumbnail"/>}
           </div>
           <div className="col col-2 d-flex align-items-center justify-content-center">{formatDate(quiz.updDate)}</div>
           <div className="col col-1 d-flex align-items-center justify-content-center">
