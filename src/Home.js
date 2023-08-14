@@ -21,8 +21,7 @@ const QuizListPage = () => {
 
   const answerQuiz = (quiz, index) => {
     // セッションがある場合は確認
-    var data = sessionStorage.getItem('answerData')
-    if (data) {
+    if (answerData) {
       // 確認メッセージを表示
       const isConfirmed = window.confirm('前回の回答情報が残っています。新たに始めると前回の情報は削除されますがよろしいですか？');
       

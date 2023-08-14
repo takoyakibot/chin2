@@ -179,8 +179,8 @@ const QuizCreatePage = () => {
     if (quizName.trim() === '') return; // テキストボックスが空欄の場合は何もしない
 
     // クイズ名が一致するクイズ情報を検索する
-    const savedQuizInfo = JSON.parse(localStorage.getItem('quizInfo')) || [];
-    const foundQuiz = savedQuizInfo.find((info) => info.quizName === quizName);
+    const savedData = JSON.parse(localStorage.getItem('quizInfo')) || [];
+    const foundQuiz = savedData.find((info) => info.quizName === quizName);
 
     var updDate = new Date();
     let newQuizInfo = [];
@@ -189,14 +189,14 @@ const QuizCreatePage = () => {
       if (!confirmed) return; // キャンセルされた場合は何もしない
 
       // クイズ名が存在する場合、対応するクイズ情報を上書きする
-      newQuizInfo = savedQuizInfo.map((info) =>
+      newQuizInfo = savedData.map((info) =>
         info.quizName === quizName
           ? { quizName, selectedImage, thumbnail, stickerImage, updDate, quizInfo: quizInfo }
           : info
       );
     } else {
       // クイズ名が存在しない場合、新たにクイズ情報を追加する
-      newQuizInfo = [...savedQuizInfo, { quizName, selectedImage, thumbnail, stickerImage, updDate, quizInfo: quizInfo }];
+      newQuizInfo = [...savedData, { quizName, selectedImage, thumbnail, stickerImage, updDate, quizInfo: quizInfo }];
     }
 
     localStorage.setItem('quizInfo', JSON.stringify(newQuizInfo));
@@ -210,16 +210,16 @@ const QuizCreatePage = () => {
     if (quizName.trim() === '') return; // テキストボックスが空欄の場合は何もしない
 
     // クイズ名が一致するクイズ情報を検索する
-    const savedQuizInfo = JSON.parse(localStorage.getItem('quizInfo')) || [];
-    const foundQuiz = savedQuizInfo.find((info) => info.quizName === quizName);
+    const savedData = JSON.parse(localStorage.getItem('quizInfo')) || [];
+    const foundData = savedData.find((info) => info.quizName === quizName);
 
-    if (foundQuiz) {
+    if (foundData) {
       // クイズ情報が見つかった場合、
       const confirmed = window.confirm('現在の状態を破棄して、' + quizName + 'の情報を読み込みますか？');
       if (!confirmed) return; // キャンセルされた場合は何もしない
 
       // セッションに埋め込んでロード
-      sessionStorage.setItem('quizInfo', JSON.stringify(foundQuiz));
+      sessionStorage.setItem('savedData', JSON.stringify(foundData));
       sessionLoad();
 
       alert('クイズ情報を読み込みました。');
