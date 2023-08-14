@@ -11,6 +11,7 @@ const QuizCreatePage = () => {
   const [rectanglePosition, setRectanglePosition] = useState({ x: 0, y: 0 });
   const [saveButtonDisabled, setSaveButtonDisabled] = useState(true); // 保存ボタンの非アクティブ状態を管理するステート
   const maxK = 200;
+  const centering = 50
 
   // ページロード時にセッションストレージから保存された画像パス情報とフセン情報を取得
   useEffect(() => {
@@ -124,7 +125,6 @@ const QuizCreatePage = () => {
   };
 
   const handleImageClick = (event) => {
-    var centering = 50
     const rect = event.target.getBoundingClientRect();
     const x = event.clientX - rect.left - centering;
     const y = event.clientY - rect.top - centering;
@@ -142,7 +142,7 @@ const QuizCreatePage = () => {
     const tempAnswer = confirmed ? 'YES' : 'NO';
     const updatedQuizInfo = [
       ...quizInfo,
-      { x: rectanglePosition.x, y: rectanglePosition.y, answer: tempAnswer }
+      { x: rectanglePosition.x, y: rectanglePosition.y, answer: tempAnswer, size: centering }
     ];
     setQuizInfo(updatedQuizInfo);
     setShowRectangle(false); // 仮フセンを追加したら非表示にする
@@ -229,6 +229,17 @@ const QuizCreatePage = () => {
     }
   };
   
+  // サイズ変更のハンドラー
+  const handleSizeChange = (e, index) => {
+    const newSize = e.target.value;
+    const sQuiz = quizInfo[index];
+    setQuizInfo(prev => prev.map((info, i) => (i === index ? { ...info,
+      x: sQuiz.x + sQuiz.size - parseInt(newSize),
+      y: sQuiz.y + sQuiz.size - parseInt(newSize),
+      size: parseInt(newSize)} : info
+    )));
+  };
+
   return (
     <div className="container">
       <div className="row">
@@ -252,7 +263,9 @@ const QuizCreatePage = () => {
                       backgroundSize: 'cover',
                       backgroundRepeat: 'no-repeat',
                       backgroundColor: 'transparent',
-                      border: 0
+                      border: 0,
+                      width: `${info.size * 2}px`,
+                      height: `${info.size * 2}px`
                   } : {}}
                 ></div>
                 <div className="index-text">{index + 1}</div>
@@ -296,6 +309,7 @@ const QuizCreatePage = () => {
               <div className="row quiz-header">
                 <div className="col col-2">No</div>
                 <div className="col">回答</div>
+                <div className="col">サイズ</div>
                 <div className="col">削除</div>
               </div>
               {quizInfo.map((info, index) => (
@@ -307,6 +321,15 @@ const QuizCreatePage = () => {
                       <option value="YES">YES</option>
                       <option value="NO">NO</option>
                     </select>
+                  </div>
+                  <div className="col d-flex align-items-center justify-content-center">
+                    <input
+                      type="number"
+                      value={info.size}
+                      onChange={(e) => handleSizeChange(e, index)}
+                      min="0"
+                      max="600"
+                    />
                   </div>
                   <div className="col d-flex align-items-center justify-content-center">
                     <button onClick={() => handleRemoveRectangle(index)}

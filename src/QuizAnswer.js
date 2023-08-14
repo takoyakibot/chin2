@@ -149,7 +149,9 @@ const QuizAnswerPage = () => {
                     backgroundColor: stickerImage ? 'transparent' :
                       (selectedIndex === index || !info.answered ? info.color : 'transparent'),
                     opacity: (selectedIndex === index && info.answered) ? 0.5 : 1,
-                    border: stickerImage ? 0 : '1px solid black' // 透明の場合の境界を示すため
+                    border: stickerImage ? 0 : '1px solid black', // 透明の場合の境界を示すため
+                    width: `${info.size * 2}px`,
+                    height: `${info.size * 2}px`
                   }}></div>
                   {selectedIndex === index && <div className="rectangle" style={{backgroundColor: info.color, opacity: 0.5, border: 0}}>
                   </div>}
