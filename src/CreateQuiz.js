@@ -10,6 +10,7 @@ const QuizCreatePage = () => {
   const [showRectangle, setShowRectangle] = useState(false);
   const [rectanglePosition, setRectanglePosition] = useState({ x: 0, y: 0 });
   const [saveButtonDisabled, setSaveButtonDisabled] = useState(true); // 保存ボタンの非アクティブ状態を管理するステート
+  const maxK = 200;
 
   // ページロード時にセッションストレージから保存された画像パス情報とフセン情報を取得
   useEffect(() => {
@@ -62,12 +63,12 @@ const QuizCreatePage = () => {
     const imageFile = event.target.files[0];
   
     if (imageFile) {
-      // サイズ上限を200KBとする
-      const maxSize = 200 * 1024;
+      // サイズ上限を設定
+      const maxSize = maxK * 1024;
   
       // ファイルサイズが上限を超えているかチェック
       if (imageFile.size > maxSize) {
-        alert('画像ファイルのサイズは一旦200KB以下である必要があります。');
+        alert('付箋のサイズは一旦'+maxK+'KB以下である必要があります。');
         return;
       }
       const reader = new FileReader();
@@ -97,7 +98,7 @@ const QuizCreatePage = () => {
           setThumbnail(canvas.toDataURL());
         };
       };
-      // reader.readAsDataURL(imageFile);
+      reader.readAsDataURL(imageFile);
     }
   };
 
@@ -105,12 +106,12 @@ const QuizCreatePage = () => {
     const imageFile = event.target.files[0];
   
     if (imageFile) {
-      // サイズ上限を50KBとする
-      const maxSize = 50 * 1024;
+      // サイズ上限を設定
+      const maxSize = maxK * 1024;
   
       // ファイルサイズが上限を超えているかチェック
       if (imageFile.size > maxSize) {
-        alert('付箋のサイズは一旦50KB以下である必要があります。');
+        alert('付箋のサイズは一旦'+maxK+'KB以下である必要があります。');
         return;
       }
       const reader = new FileReader();
@@ -118,7 +119,7 @@ const QuizCreatePage = () => {
         const base64Image = reader.result;
         setStickerImage(base64Image);
       };
-      // reader.readAsDataURL(imageFile);
+      reader.readAsDataURL(imageFile);
     }
   };
 
@@ -244,7 +245,16 @@ const QuizCreatePage = () => {
             )}
             {quizInfo.map((info, index) => (
               <div key={index} style={{ position: 'absolute', top: `${info.y}px`, left: `${info.x}px` }}>
-                <div className="rectangle rectangle-create"></div>
+                <div
+                  className="rectangle rectangle-create"
+                  style={stickerImage ? {
+                      backgroundImage: `url(${stickerImage})`,
+                      backgroundSize: 'cover',
+                      backgroundRepeat: 'no-repeat',
+                      backgroundColor: 'transparent',
+                      border: 0
+                  } : {}}
+                ></div>
                 <div className="index-text">{index + 1}</div>
               </div>
             ))}
