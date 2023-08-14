@@ -2,34 +2,54 @@ import React, { useState, useEffect } from 'react';
 import './style.css';
 
 const QuizCreatePage = () => {
+  const [quizName, setQuizName] = useState(''); // クイズの名前を保持するステート
   const [selectedImage, setSelectedImage] = useState(null);
   const [quizInfo, setQuizInfo] = useState([]); // フセンの情報とクイズの回答を保持するステート
+  const [thumbnail, setThumbnail] = useState(null); // サムネイルを保存するステート
+  const [stickerImage, setStickerImage] = useState(null);
   const [showRectangle, setShowRectangle] = useState(false);
   const [rectanglePosition, setRectanglePosition] = useState({ x: 0, y: 0 });
-  const [quizName, setQuizName] = useState(''); // クイズの名前を保持するステート
   const [saveButtonDisabled, setSaveButtonDisabled] = useState(true); // 保存ボタンの非アクティブ状態を管理するステート
-  const [thumbnail, setThumbnail] = useState(null); // サムネイルを保存するステート
 
   // ページロード時にセッションストレージから保存された画像パス情報とフセン情報を取得
   useEffect(() => {
-    const savedData = sessionStorage.getItem('savedData');
-    if (savedData) {
-      const { quizName, selectedImage, thumbnail, quizInfo } = JSON.parse(savedData);
-      if (selectedImage) {
-        setSelectedImage(selectedImage);
-      }
-      if (quizInfo) {
-        setQuizInfo(quizInfo);
-      }
+    sessionLoad();
+  }, []);
+
+  const sessionLoad = () => {
+    const preParseData = sessionStorage.getItem('savedData');
+    if (preParseData) {
+      const { quizName, selectedImage, thumbnail, stickerImage, quizInfo } = JSON.parse(preParseData);
       if (quizName) {
         setQuizName(quizName);
         setSaveButtonDisabled(quizName.trim() === '');
       }
+      if (selectedImage) {
+        setSelectedImage(selectedImage);
+      }
       if (thumbnail) {
         setThumbnail(thumbnail);
       }
+      if (stickerImage) {
+        setThumbnail(stickerImage);
+      }
+      if (quizInfo) {
+        setQuizInfo(quizInfo);
+      }
     }
-  }, []);
+  };
+
+  useEffect(() => {
+    sessionStorage.setItem('savedData', JSON.stringify(
+      {
+        quizName: quizName,
+        selectedImage: selectedImage,
+        thumbnail: thumbnail,
+        stickerImage: stickerImage,
+        quizInfo: quizInfo
+      }
+    ));
+  }, [quizName, selectedImage, thumbnail, stickerImage, quizInfo]);
 
   // テキストボックスの値が変更されたときに実行される関数
   const handleQuizNameChange = (event) => {
@@ -77,9 +97,30 @@ const QuizCreatePage = () => {
           setThumbnail(canvas.toDataURL());
         };
       };
-      reader.readAsDataURL(imageFile);
+      // reader.readAsDataURL(imageFile);
     }
-  };  
+  };
+
+  const handleStickerSelect = (event) => {
+    const imageFile = event.target.files[0];
+  
+    if (imageFile) {
+      // サイズ上限を50KBとする
+      const maxSize = 50 * 1024;
+  
+      // ファイルサイズが上限を超えているかチェック
+      if (imageFile.size > maxSize) {
+        alert('付箋のサイズは一旦50KB以下である必要があります。');
+        return;
+      }
+      const reader = new FileReader();
+      reader.onloadend = function () {
+        const base64Image = reader.result;
+        setStickerImage(base64Image);
+      };
+      // reader.readAsDataURL(imageFile);
+    }
+  };
 
   const handleImageClick = (event) => {
     var centering = 50
@@ -104,11 +145,6 @@ const QuizCreatePage = () => {
     ];
     setQuizInfo(updatedQuizInfo);
     setShowRectangle(false); // 仮フセンを追加したら非表示にする
-    // 更新したフセン情報を保存
-    sessionStorage.setItem('savedData', JSON.stringify({
-      selectedImage: selectedImage,
-      quizInfo: updatedQuizInfo,
-    }));
   };
 
   // Enterキーのイベントハンドラを設定
@@ -123,25 +159,19 @@ const QuizCreatePage = () => {
     // 削除ボタンを押す前に警告を表示
     const confirmed = window.confirm('削除しますか？（番号がずれる場合があるので注意してください）');
     if (confirmed) {
-      const newQuizInfo = quizInfo.filter((_, i) => i !== index);
-      setQuizInfo(newQuizInfo);
+      const updatedQuizInfo = quizInfo.filter((_, i) => i !== index);
+      setQuizInfo(updatedQuizInfo);
       setShowRectangle(false); // 仮フセンを追加したら非表示にする
-      // 更新したフセン情報を保存
-      sessionStorage.setItem('savedData', JSON.stringify({
-        selectedImage: selectedImage,
-        quizInfo: newQuizInfo,
-      }));
     }
   };
 
+  // クイズの回答を更新
   const handleQuizAnswerChange = (event, index) => {
     const { value } = event.target;
     // 対象のフセンの回答を更新
     const updatedQuizInfo = [...quizInfo];
     updatedQuizInfo[index].answer = value;
     setQuizInfo(updatedQuizInfo);
-    // 更新したフセン情報を保存
-    sessionStorage.setItem('quizInfo', JSON.stringify(updatedQuizInfo));
   };
 
   // 保存ボタンがクリックされたときに実行される関数
@@ -161,12 +191,12 @@ const QuizCreatePage = () => {
       // クイズ名が存在する場合、対応するクイズ情報を上書きする
       newQuizInfo = savedQuizInfo.map((info) =>
         info.quizName === quizName
-          ? { quizName, selectedImage, thumbnail, updDate, quizInfo: quizInfo }
+          ? { quizName, selectedImage, thumbnail, stickerImage, updDate, quizInfo: quizInfo }
           : info
       );
     } else {
       // クイズ名が存在しない場合、新たにクイズ情報を追加する
-      newQuizInfo = [...savedQuizInfo, { quizName, selectedImage, thumbnail, updDate, quizInfo: quizInfo }];
+      newQuizInfo = [...savedQuizInfo, { quizName, selectedImage, thumbnail, stickerImage, updDate, quizInfo: quizInfo }];
     }
 
     localStorage.setItem('quizInfo', JSON.stringify(newQuizInfo));
@@ -188,9 +218,9 @@ const QuizCreatePage = () => {
       const confirmed = window.confirm('現在の状態を破棄して、' + quizName + 'の情報を読み込みますか？');
       if (!confirmed) return; // キャンセルされた場合は何もしない
 
-      // 画面に読み込んで表示する
-      setSelectedImage(foundQuiz.selectedImage);
-      setQuizInfo(foundQuiz.quizInfo); 
+      // セッションに埋め込んでロード
+      sessionStorage.setItem('quizInfo', JSON.stringify(foundQuiz));
+      sessionLoad();
 
       alert('クイズ情報を読み込みました。');
     } else {
@@ -204,28 +234,37 @@ const QuizCreatePage = () => {
         <div className="col-lg-8 mb-4">
           {/* 画像選択フィールドの画像表示領域 */}
           {selectedImage && (
-            <div style={{ position: 'relative' }}>
-              <img src={selectedImage} alt="Selected" onClick={handleImageClick} className="image-select" />
-              {showRectangle && (
-                <div
-                  className="rectangle" // 仮フセンのスタイル
-                  style={{ top: `${rectanglePosition.y}px`, left: `${rectanglePosition.x}px`, opacity: 0.5 }}
-                ></div>
-              )}
-              {quizInfo.map((info, index) => (
-                <div key={index} style={{ position: 'absolute', top: `${info.y}px`, left: `${info.x}px` }}>
-                  <div className="rectangle rectangle-create"></div>
-                  <div className="index-text">{index + 1}</div>
-                </div>
-              ))}
-            </div>
+          <div style={{ position: 'relative' }}>
+            <img src={selectedImage} alt="Selected" onClick={handleImageClick} className="image-select" />
+            {showRectangle && (
+              <div
+                className="rectangle" // 仮フセンのスタイル
+                style={{ top: `${rectanglePosition.y}px`, left: `${rectanglePosition.x}px`, opacity: 0.5 }}
+              ></div>
+            )}
+            {quizInfo.map((info, index) => (
+              <div key={index} style={{ position: 'absolute', top: `${info.y}px`, left: `${info.x}px` }}>
+                <div className="rectangle rectangle-create"></div>
+                <div className="index-text">{index + 1}</div>
+              </div>
+            ))}
+          </div>
           )}
-          {/* 画像選択ボタン */}
-          <div className="image-select-button">
-            <label htmlFor="filename" className="browse_btn">
-              画像を選択
-              <input type="file" id="filename" onChange={handleImageSelect} accept="image/*" />
-            </label>
+          <div className="row">
+            {/* 画像選択ボタン */}
+            <div className="col col-2 image-select-button">
+              <label htmlFor="filename" className="browse_btn">
+                画像を選択
+                <input type="file" id="filename" onChange={handleImageSelect} accept="image/*" />
+              </label>
+            </div>
+            {/* 付箋選択ボタン */}
+            <div className="col col-2 image-select-button">
+              <label htmlFor="stickerfile" className="browse_btn">
+                付箋を選択
+                <input type="file" id="stickerfile" onChange={handleStickerSelect} accept="image/*" />
+              </label>
+            </div>
           </div>
         </div>
         <div className="col-lg-4">
