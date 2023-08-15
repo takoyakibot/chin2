@@ -151,10 +151,13 @@ const QuizAnswerPage = () => {
                     opacity: (selectedIndex === index && info.answered) ? 0.5 : 1,
                     border: stickerImage ? 0 : '1px solid black', // 透明の場合の境界を示すため
                     width: `${info.size * 2}px`,
-                    height: `${info.size * 2}px`
-                  }}></div>
-                  {selectedIndex === index && <div className="rectangle" style={{backgroundColor: info.color, opacity: 0.5, border: 0}}>
-                  </div>}
+                    height: `${info.size * 2}px`}}></div>
+                  {selectedIndex === index && <div className="rectangle" style={{
+                    backgroundColor: info.color,
+                    opacity: 0.5,
+                    border: 0,
+                    width: `${info.size * 2}px`,
+                    height: `${info.size * 2}px`}}></div>}
                   <div className="index-text">{index + 1}</div>
                 </div>
               )
