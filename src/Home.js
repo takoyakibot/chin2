@@ -42,7 +42,7 @@ const QuizListPage = () => {
     setQuizzes(updatedQuizInfo); // ステートを更新
 
     // ページ遷移
-    navigate('/answer');
+    navigate('/chiochin/answer');
   };
 
   const createNewQuiz = () => {
@@ -78,12 +78,12 @@ const QuizListPage = () => {
     <div className="container">
       <div className="row mb-4 d-flex align-items-center quiz-list-button-row">
         <div className="col">
-          <Link to="/create">
+          <Link to="/chiochin/create">
             <button onClick={createNewQuiz} className="btn btn-info new-quiz-button">
               クイズ新規作成
             </button>
           </Link>
-          {answerData ? <Link to="/answer">{resumeButton}</Link> : resumeButton}
+          {answerData ? <Link to="/chiochin/answer">{resumeButton}</Link> : resumeButton}
         </div>
       </div>
       <div className="m-2">
@@ -111,7 +111,7 @@ const QuizListPage = () => {
           </div>
           <div className="col col-2 d-flex align-items-center justify-content-center">{formatDate(quiz.updDate)}</div>
           <div className="col col-1 d-flex align-items-center justify-content-center">
-            <Link to="/create">
+            <Link to="/chiochin/create">
               <button className="btn btn-success" onClick={() => editQuiz(quiz)}>
                 編集
               </button>

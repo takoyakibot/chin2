@@ -5,8 +5,8 @@ import './style.css'; // 必要に応じてスタイリング
 const Header = () => {
   return (
     <header className="header">
-      <Link to="/">
-        <img src="logo.png" alt="Logo" className="header-logo" />
+      <Link to="/chiochin">
+        <img src="/logo.png" alt="Logo" className="header-logo" />
       </Link>
     </header>
   );
