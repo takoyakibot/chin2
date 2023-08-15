@@ -1,4 +1,4 @@
-SOURCE_FILES = src/* # 依存するソースファイル
+SOURCE_FILES = src/* public/* # 依存するソースファイル
 
 build: $(SOURCE_FILES)
 	npm run build
