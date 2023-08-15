@@ -1,6 +1,6 @@
-.PHONY: deploy
+SOURCE_FILES = src/* # 依存するソースファイル
 
-build:
+build: $(SOURCE_FILES)
 	npm run build
 
 sync:
