@@ -30,11 +30,9 @@ const QuizListPage = () => {
       if (!isConfirmed) {
         return;
       }
-
-      // ページ遷移
-      navigate('/answer');
     }
 
+    // セッションがない場合、セットして遷移
     const updatedQuizInfo = [...quizzes];
     const currentDate = new Date().toISOString(); // 現在日時を取得
     updatedQuizInfo[index].answerDate = currentDate; // answerDateを更新
@@ -42,6 +40,9 @@ const QuizListPage = () => {
   
     sessionStorage.setItem('answerData', JSON.stringify(quiz));
     setQuizzes(updatedQuizInfo); // ステートを更新
+
+    // ページ遷移
+    navigate('/answer');
   };
 
   const createNewQuiz = () => {
