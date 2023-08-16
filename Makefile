@@ -4,6 +4,6 @@ build: $(SOURCE_FILES)
 	npm run build
 
 sync:
-	aws s3 sync build/ s3://alpaca-sandbag
+	aws s3 sync build/ s3://alpacasandbag.com
 
 deploy: build sync
