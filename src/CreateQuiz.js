@@ -273,16 +273,16 @@ const QuizCreatePage = () => {
             ))}
           </div>
           )}
-          <div className="row">
+          <div className="d-flex">
             {/* 画像選択ボタン */}
-            <div className="col col-2 image-select-button">
+            <div className="m-2">
               <label htmlFor="filename" className="browse_btn">
                 画像を選択
                 <input type="file" id="filename" onChange={handleImageSelect} accept="image/*" />
               </label>
             </div>
             {/* 付箋選択ボタン */}
-            <div className="col col-2 image-select-button">
+            <div className="m-2">
               <label htmlFor="stickerfile" className="browse_btn">
                 付箋を選択
                 <input type="file" id="stickerfile" onChange={handleStickerSelect} accept="image/*" />
