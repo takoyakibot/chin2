@@ -1,6 +1,21 @@
-# Getting Started with Create React App
+# ち◯ちん見せちゃダメゲーム
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+[Livetube「ち○ちん見せちゃダメゲーム」編 - YouTube](https://www.youtube.com/watch?v=rECP__DQgNY)
+
+詳しくは上記動画をご覧ください。
+
+絵画に貼った付箋の下に「ある」か「ない」かを当てるだけの簡単なゲーム、を遊べる感じのサイトです。
+このバージョンはローカルのストレージだけを利用するため、どこかにアップロードしなくても動きます。それを画面共有なりすればゲームは実現すると思います。
+
+https://alpacasandbag.com/chiochin
+
+上記でも公開してるのでそっちを使ってください。しばらくは公開予定です。
+
+そのうちマルち◯ちんを公開予定したいです。
+
+操作についてはある程度触ればわかるとは思います。
+
+以下はreactについての内容です。
 
 ## Available Scripts
 

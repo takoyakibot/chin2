@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import './overlay.css';
 
 const Overlay = ({ correctAnswer, showOverlay, onCloseOverlay }) => {

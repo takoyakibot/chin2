@@ -134,7 +134,7 @@ const QuizCreatePage = () => {
   };
 
   const handleAddRectangle = (e) => {
-    if (!showRectangle || e.key && e.key !== 'Enter') {
+    if (!showRectangle || (e.key && e.key !== 'Enter')) {
       return;
     }
 
