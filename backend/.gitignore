@@ -1,0 +1,26 @@
+# 依存関係ディレクトリ
+node_modules/
+
+# ビルド出力
+dist/
+
+# 環境設定
+.env
+
+# エディタやIDEの設定
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# OS生成ファイル
+.DS_Store
+Thumbs.db
+
+# ログファイル
+*.log
+
+# その他
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
