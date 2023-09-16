@@ -6,7 +6,7 @@ import gameRoutes from './gameRoutes';
 
 const router = Router();
 
-router.use('/users', gameRoutes);
+router.use('/games', gameRoutes);
 // router.use('/chats', chatRoutes);
 // router.use('/auth', authRoutes);
 
