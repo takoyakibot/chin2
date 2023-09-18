@@ -1,4 +1,6 @@
 import { Router, Request, Response } from 'express';
+import Game from '../models/Game'; // 新しく作ったモデルをインポート
+
 const router = Router();
 
 const sampleGameData = [
@@ -25,16 +27,20 @@ const sampleGameData = [
   }
 ];
 
-router.get('/', (req: Request, res: Response) => {
+router.get('/mock', (req: Request, res: Response) => {
   res.status(200).json(sampleGameData);
 });
 
-router.get('/:id', (req, res) => {
-  // 特定のIDを持つユーザーを取得する処理
-});
-
-router.post('/', (req, res) => {
-  // 新しいユーザーを作成する処理
+router.get('/', async (req: Request, res: Response) => {
+  try {
+    // Mongooseを使って全てのgamesを取得
+    const games = await Game.find({});
+    console.log("ok");
+    res.json(games);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Internal server error' });
+  }
 });
 
 export default router;
