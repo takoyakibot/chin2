@@ -1,18 +1,26 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import axios from 'axios';
 import './style.css';
 
-const getQuizzesFromLocalStorage = () => {
-  return JSON.parse(localStorage.getItem('quizInfo')) || [];
-};
-
 const QuizListPage = () => {
-  const [quizzes, setQuizzes] = useState(getQuizzesFromLocalStorage());
+  const [quizzes, setQuizzes] = useState([]);
   const [answerData, setAnswerData] = useState(null);
   const navigate = useNavigate();
 
+  const fetchQuizzes = async () => {
+    // return JSON.parse(localStorage.getItem('quizInfo')) || [];
+    try {
+      const response = await axios.get('http://localhost:3000/api/games');
+      console.log(response.data);
+      setQuizzes(response.data);
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
   useEffect(() => {
-    setQuizzes(getQuizzesFromLocalStorage());
+    fetchQuizzes();
     setAnswerData(sessionStorage.getItem('answerData'));
   }, []);
 
