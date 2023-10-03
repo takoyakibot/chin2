@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 import './style.css';
 
 const QuizCreatePage = () => {
@@ -11,7 +12,7 @@ const QuizCreatePage = () => {
   const [rectanglePosition, setRectanglePosition] = useState({ x: 0, y: 0 });
   const [saveButtonDisabled, setSaveButtonDisabled] = useState(true); // 保存ボタンの非アクティブ状態を管理するステート
   const maxK = 200;
-  const centering = 50
+  const centering = 50;
 
   // ページロード時にセッションストレージから保存された画像パス情報とフセン情報を取得
   useEffect(() => {
@@ -176,56 +177,31 @@ const QuizCreatePage = () => {
   };
 
   // 保存ボタンがクリックされたときに実行される関数
-  const handleSaveQuiz = () => {
-    if (quizName.trim() === '') return; // テキストボックスが空欄の場合は何もしない
+  const handleSaveQuiz = async () => {  // 非同期処理なのでasyncを追加
+    if (quizName.trim() === '') return;
 
-    // クイズ名が一致するクイズ情報を検索する
-    const savedData = JSON.parse(localStorage.getItem('quizInfo')) || [];
-    const foundQuiz = savedData.find((info) => info.quizName === quizName);
+    // クイズの新しいデータオブジェクトを作成
+    const newQuizData = {
+      quizName,
+      selectedImage,
+      thumbnail,
+      stickerImage,
+      updDate: new Date(),
+      quizInfo
+    };
 
-    var updDate = new Date();
-    let newQuizInfo = [];
-    if (foundQuiz) {
-      const confirmed = window.confirm('すでに存在するクイズ名です。上書き保存しますか？');
-      if (!confirmed) return; // キャンセルされた場合は何もしない
+    try {
+      // APIへのPOSTリクエストでクイズデータを保存
+      const response = await axios.post('http://localhost:3000/api/quizzes', newQuizData);
 
-      // クイズ名が存在する場合、対応するクイズ情報を上書きする
-      newQuizInfo = savedData.map((info) =>
-        info.quizName === quizName
-          ? { quizName, selectedImage, thumbnail, stickerImage, updDate, quizInfo: quizInfo }
-          : info
-      );
-    } else {
-      // クイズ名が存在しない場合、新たにクイズ情報を追加する
-      newQuizInfo = [...savedData, { quizName, selectedImage, thumbnail, stickerImage, updDate, quizInfo: quizInfo }];
-    }
-
-    localStorage.setItem('quizInfo', JSON.stringify(newQuizInfo));
-
-    // 保存したよメッセージ
-    alert('クイズ情報を保存しました。');
-  };
-
-  // 読込ボタンがクリックされたときに実行される関数
-  const handleLoadQuiz = () => {
-    if (quizName.trim() === '') return; // テキストボックスが空欄の場合は何もしない
-
-    // クイズ名が一致するクイズ情報を検索する
-    const savedData = JSON.parse(localStorage.getItem('quizInfo')) || [];
-    const foundData = savedData.find((info) => info.quizName === quizName);
-
-    if (foundData) {
-      // クイズ情報が見つかった場合、
-      const confirmed = window.confirm('現在の状態を破棄して、' + quizName + 'の情報を読み込みますか？');
-      if (!confirmed) return; // キャンセルされた場合は何もしない
-
-      // セッションに埋め込んでロード
-      sessionStorage.setItem('savedData', JSON.stringify(foundData));
-      sessionLoad();
-
-      alert('クイズ情報を読み込みました。');
-    } else {
-      alert('指定されたクイズ名の情報が見つかりません。');
+      if (response.status === 200) {
+        alert('クイズ情報を保存しました。');
+      } else {
+        alert('何らかの問題が発生しました。' + response);
+      }
+    } catch (error) {
+      console.error('エラーが発生:', error);
+      alert('クイズの保存に失敗しました。');
     }
   };
   
@@ -281,10 +257,10 @@ const QuizCreatePage = () => {
                 <input type="file" id="filename" onChange={handleImageSelect} accept="image/*" />
               </label>
             </div>
-            {/* 付箋選択ボタン */}
+            {/* フセン選択ボタン */}
             <div className="m-2">
               <label htmlFor="stickerfile" className="browse_btn">
-                付箋を選択
+                フセンを選択
                 <input type="file" id="stickerfile" onChange={handleStickerSelect} accept="image/*" />
               </label>
             </div>
@@ -344,24 +320,18 @@ const QuizCreatePage = () => {
           <div className="col-12">
             <div className="row footer-row">
               {/* テキストボックス */}
-              <div className="col col-6">
+              <div className="col col-8">
                 <input
                   type="text" className="quiz-name-input"
-                  placeholder="クイズ名を入力"
+                  placeholder="タイトル"
                   value={quizName}
                   onChange={handleQuizNameChange}
                 />
               </div>
               {/* 保存ボタン */}
-              <div className="col col-3">
+              <div className="col col-4">
                 <button disabled={saveButtonDisabled} className="btn btn-info" onClick={handleSaveQuiz}>
                   保存
-                </button>
-              </div>
-              {/* 読込ボタン */}
-              <div className="col col-3">
-                <button disabled={saveButtonDisabled} className="btn btn-success" onClick={handleLoadQuiz}>
-                  読込
                 </button>
               </div>
             </div>
