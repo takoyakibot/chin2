@@ -164,3 +164,7 @@ h1 {
   /* ここにヘッダーのスタイルを適用 */
   margin: 10px;
 }
+
+.hidden {
+  display: none;
+}

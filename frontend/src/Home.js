@@ -108,6 +108,7 @@ const QuizListPage = () => {
         </div>
         {quizzes.map((quiz, index) => (
         <div key={index} className="row quiz-item">
+          <div className="hidden">{quiz._id}</div>
           <div className="col col-1 d-flex align-items-center justify-content-center">{index + 1}</div>
           <div className="col col-2 d-flex align-items-center justify-content-center">{quiz.quizName}</div>
           <div className="col col-1 d-flex align-items-center justify-content-center">{quiz.quizInfo.length}</div>
