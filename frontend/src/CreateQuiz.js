@@ -3,6 +3,7 @@ import axios from 'axios';
 import './style.css';
 
 const QuizCreatePage = () => {
+  const [quizId, setQuizId] = useState(''); // クイズのIDを保持するステート
   const [quizName, setQuizName] = useState(''); // クイズの名前を保持するステート
   const [selectedImage, setSelectedImage] = useState(null);
   const [thumbnail, setThumbnail] = useState(null); // サムネイルを保存するステート
@@ -16,22 +17,30 @@ const QuizCreatePage = () => {
 
   // ページロード時にセッションストレージから保存された画像パス情報とフセン情報を取得
   useEffect(() => {
-    sessionLoad();
+    (async () => {
+      await sessionLoad();
+    })();
   }, []);
 
-  const sessionLoad = () => {
+  const sessionLoad = async () => {
     const preParseData = sessionStorage.getItem('savedData');
     if (preParseData) {
-      const { quizName, selectedImage, thumbnail, stickerImage, quizInfo } = JSON.parse(preParseData);
+      const { id, quizName, selectedImage, stickerImage, quizInfo } = JSON.parse(preParseData);
+      if (id) {
+        setQuizId(id);
+      }
       if (quizName) {
         setQuizName(quizName);
         setSaveButtonDisabled(quizName.trim() === '');
       }
       if (selectedImage) {
         setSelectedImage(selectedImage);
-      }
-      if (thumbnail) {
-        setThumbnail(thumbnail);
+      } else {
+        // selectedImageが存在しない場合、APIを叩いて画像を取得
+        const response = await axios.get(`http://localhost:3000/api/quizzes/${id}/image`);
+        const data = await response.json();
+        const base64Image = data.base64Image; // APIのレスポンスからbase64形式の画像を取得
+        setSelectedImage(base64Image);
       }
       if (stickerImage) {
         setStickerImage(stickerImage);
@@ -45,14 +54,14 @@ const QuizCreatePage = () => {
   useEffect(() => {
     sessionStorage.setItem('savedData', JSON.stringify(
       {
+        id: quizId,
         quizName: quizName,
         selectedImage: selectedImage,
-        thumbnail: thumbnail,
         stickerImage: stickerImage,
         quizInfo: quizInfo
       }
     ));
-  }, [quizName, selectedImage, thumbnail, stickerImage, quizInfo]);
+  }, [quizId, quizName, selectedImage, stickerImage, quizInfo]);
 
   // テキストボックスの値が変更されたときに実行される関数
   const handleQuizNameChange = (event) => {
@@ -77,33 +86,11 @@ const QuizCreatePage = () => {
       reader.onloadend = function () {
         const base64Image = reader.result;
         setSelectedImage(base64Image);
-
-        // サムネイル作成
-        const imgElement = document.createElement('img');
-        imgElement.src = reader.result;
-        
-        const canvas = document.createElement('canvas');
-        const ctx = canvas.getContext('2d');
-        imgElement.onload = () => {
-          // 長辺を設定する
-          const pnt = 10;
-          if (imgElement.width > imgElement.height) {
-            canvas.width = pnt;
-            canvas.height = imgElement.height * (pnt / imgElement.width);
-          } else {
-            canvas.height = pnt;
-            canvas.width = imgElement.width * (pnt / imgElement.height);
-          }
-          ctx.drawImage(imgElement, 0, 0, canvas.width, canvas.height);
-          
-          // サムネイルをBase64に変換
-          setThumbnail(canvas.toDataURL());
-        };
       };
       reader.readAsDataURL(imageFile);
     }
   };
-
+  
   const handleStickerSelect = (event) => {
     const imageFile = event.target.files[0];
   
@@ -123,6 +110,31 @@ const QuizCreatePage = () => {
       };
       reader.readAsDataURL(imageFile);
     }
+  };
+
+  const createThumbnail = (base64Image) => {
+    return new Promise((resolve, reject) => {
+      const imgElement = document.createElement('img');
+      imgElement.src = base64Image;
+      
+      const canvas = document.createElement('canvas');
+      const ctx = canvas.getContext('2d');
+      imgElement.onload = () => {
+        // 長辺を設定する
+        const pnt = 10;
+        if (imgElement.width > imgElement.height) {
+          canvas.width = pnt;
+          canvas.height = imgElement.height * (pnt / imgElement.width);
+        } else {
+          canvas.height = pnt;
+          canvas.width = imgElement.width * (pnt / imgElement.height);
+        }
+        ctx.drawImage(imgElement, 0, 0, canvas.width, canvas.height);
+        
+        // サムネイルをBase64に変換
+        resolve(canvas.toDataURL());  // 処理が終わったらPromiseを解決する
+      };
+    });
   };
 
   const handleImageClick = (event) => {
@@ -180,8 +192,12 @@ const QuizCreatePage = () => {
   const handleSaveQuiz = async () => {  // 非同期処理なのでasyncを追加
     if (quizName.trim() === '') return;
 
+    // サムネイル作成はこちらで呼び出す
+    const thumbnail = await createThumbnail(selectedImage);  // 非同期処理なのでawaitを使う
+
     // クイズの新しいデータオブジェクトを作成
     const newQuizData = {
+      id: quizId,
       quizName,
       selectedImage,
       thumbnail,
@@ -191,8 +207,14 @@ const QuizCreatePage = () => {
     };
 
     try {
-      // APIへのPOSTリクエストでクイズデータを保存
-      const response = await axios.post('http://localhost:3000/api/quizzes', newQuizData);
+      // クイズデータを保存
+      // idが存在すれば更新、なければ新規作成
+      var response;
+      if (quizId === '') {
+        response = await axios.post('http://localhost:3000/api/quizzes', newQuizData);
+      } else {
+        response = await axios.put('http://localhost:3000/api/quizzes', newQuizData);
+      }
 
       if (response.status === 200) {
         alert('クイズ情報を保存しました。');

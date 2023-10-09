@@ -25,7 +25,12 @@ const QuizListPage = () => {
   }, []);
 
   const editQuiz = (quiz) => {
-    sessionStorage.setItem('savedData', JSON.stringify(quiz));
+    sessionStorage.setItem('savedData', JSON.stringify({
+      id: quiz._id,
+      quizName: quiz.quizName,
+      stickerImage: quiz.stickerImage,
+      quizInfo: quiz.quizInfo
+    }));
   };
 
   const answerQuiz = (quiz, index) => {
