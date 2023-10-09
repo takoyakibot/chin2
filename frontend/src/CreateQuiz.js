@@ -6,7 +6,6 @@ const QuizCreatePage = () => {
   const [quizId, setQuizId] = useState(''); // クイズのIDを保持するステート
   const [quizName, setQuizName] = useState(''); // クイズの名前を保持するステート
   const [selectedImage, setSelectedImage] = useState(null);
-  const [thumbnail, setThumbnail] = useState(null); // サムネイルを保存するステート
   const [stickerImage, setStickerImage] = useState(null);
   const [quizInfo, setQuizInfo] = useState([]); // フセンの情報とクイズの回答を保持するステート
   const [showRectangle, setShowRectangle] = useState(false);
@@ -37,7 +36,7 @@ const QuizCreatePage = () => {
         setSelectedImage(selectedImage);
       } else {
         // selectedImageが存在しない場合、APIを叩いて画像を取得
-        const response = await axios.get(`http://localhost:3000/api/quizzes/${id}/image`);
+        const response = await axios.get(`http://localhost:3000/api/games/${id}/image`);
         const data = await response.json();
         const base64Image = data.base64Image; // APIのレスポンスからbase64形式の画像を取得
         setSelectedImage(base64Image);
@@ -211,9 +210,9 @@ const QuizCreatePage = () => {
       // idが存在すれば更新、なければ新規作成
       var response;
       if (quizId === '') {
-        response = await axios.post('http://localhost:3000/api/quizzes', newQuizData);
+        response = await axios.post('http://localhost:3000/api/games', newQuizData);
       } else {
-        response = await axios.put('http://localhost:3000/api/quizzes', newQuizData);
+        response = await axios.put('http://localhost:3000/api/games', newQuizData);
       }
 
       if (response.status === 200) {
