@@ -26,7 +26,7 @@ const QuizListPage = () => {
 
   const editQuiz = (quiz) => {
     sessionStorage.setItem('savedData', JSON.stringify({
-      id: quiz._id,
+      quizId: quiz._id,
       quizName: quiz.quizName,
       stickerImage: quiz.stickerImage,
       quizInfo: quiz.quizInfo

@@ -24,9 +24,9 @@ const QuizCreatePage = () => {
   const sessionLoad = async () => {
     const preParseData = sessionStorage.getItem('savedData');
     if (preParseData) {
-      const { id, quizName, selectedImage, stickerImage, quizInfo } = JSON.parse(preParseData);
-      if (id) {
-        setQuizId(id);
+      const { quizId, quizName, selectedImage, stickerImage, quizInfo } = JSON.parse(preParseData);
+      if (quizId) {
+        setQuizId(quizId);
       }
       if (quizName) {
         setQuizName(quizName);
@@ -36,7 +36,8 @@ const QuizCreatePage = () => {
         setSelectedImage(selectedImage);
       } else {
         // selectedImageが存在しない場合、APIを叩いて画像を取得
-        const response = await axios.get(`http://localhost:3000/api/games/${id}/image`);
+        const encodedId = encodeURIComponent(quizId);
+        const response = await axios.get(`http://localhost:3000/api/games/${encodedId}/image`);
         const data = await response.json();
         const base64Image = data.base64Image; // APIのレスポンスからbase64形式の画像を取得
         setSelectedImage(base64Image);
@@ -53,7 +54,7 @@ const QuizCreatePage = () => {
   useEffect(() => {
     sessionStorage.setItem('savedData', JSON.stringify(
       {
-        id: quizId,
+        quizId: quizId,
         quizName: quizName,
         selectedImage: selectedImage,
         stickerImage: stickerImage,
@@ -196,7 +197,7 @@ const QuizCreatePage = () => {
 
     // クイズの新しいデータオブジェクトを作成
     const newQuizData = {
-      id: quizId,
+      quizId,
       quizName,
       selectedImage,
       thumbnail,
