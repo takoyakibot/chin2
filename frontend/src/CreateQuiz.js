@@ -218,6 +218,7 @@ const QuizCreatePage = () => {
 
       if (response.status === 200) {
         alert('クイズ情報を保存しました。');
+        setQuizId(response.data.quizId);
       } else {
         alert('何らかの問題が発生しました。' + response);
       }
