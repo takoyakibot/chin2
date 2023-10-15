@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
+import { resizeImageToMaxBytes } from './utils/imageUtils';
 import axios from 'axios';
 import './style.css';
 
@@ -70,23 +71,29 @@ const QuizCreatePage = () => {
     setSaveButtonDisabled(value.trim() === ''); // テキストボックスが空欄でない場合、保存ボタンと読込ボタンを有効にする
   };
   
-  const handleImageSelect = (event) => {
+  const handleImageSelect = async (event) => {
     const imageFile = event.target.files[0];
   
     if (imageFile) {
       // サイズ上限を設定
       const maxSize = maxK * 1024;
-  
-      // ファイルサイズが上限を超えているかチェック
-      if (imageFile.size > maxSize) {
-        alert('付箋のサイズは一旦'+maxK+'KB以下である必要があります。');
-        return;
-      }
+
       const reader = new FileReader();
-      reader.onloadend = function () {
-        const base64Image = reader.result;
-        setSelectedImage(base64Image);
+      reader.onload = async (event) => {
+        const base64Image = event.target.result;
+    
+        try {
+          const resizedBase64 = await resizeImageToMaxBytes(base64Image, maxSize);
+          setSelectedImage(resizedBase64);
+        } catch (error) {
+          console.error("画像のリサイズに失敗:", error);
+        }
       };
+
+      reader.onerror = (error) => {
+        console.error("ファイルの読み込みに失敗:", error);
+      };
+
       reader.readAsDataURL(imageFile);
     }
   };
@@ -146,7 +153,7 @@ const QuizCreatePage = () => {
     setShowRectangle(true);
   };
 
-  const handleAddRectangle = (e) => {
+  const handleAddRectangle = useCallback((e) => {
     if (!showRectangle || (e.key && e.key !== 'Enter')) {
       return;
     }
@@ -159,7 +166,7 @@ const QuizCreatePage = () => {
     ];
     setQuizInfo(updatedQuizInfo);
     setShowRectangle(false); // 仮フセンを追加したら非表示にする
-  };
+  });
 
   // Enterキーのイベントハンドラを設定
   useEffect(() => {
@@ -167,11 +174,11 @@ const QuizCreatePage = () => {
     return () => {
       document.removeEventListener('keydown', handleAddRectangle);
     };
-  }, [rectanglePosition, quizInfo]);
+  }, [rectanglePosition, quizInfo, handleAddRectangle]);
 
   const handleRemoveRectangle = (index) => {
     // 削除ボタンを押す前に警告を表示
-    const confirmed = window.confirm('削除しますか？（番号がずれる場合があるので注意してください）');
+    const confirmed = window.confirm('削除しますか？');
     if (confirmed) {
       const updatedQuizInfo = quizInfo.filter((_, i) => i !== index);
       setQuizInfo(updatedQuizInfo);
@@ -205,6 +212,8 @@ const QuizCreatePage = () => {
       updDate: new Date(),
       quizInfo
     };
+
+    console.log(newQuizData);
 
     try {
       // クイズデータを保存
