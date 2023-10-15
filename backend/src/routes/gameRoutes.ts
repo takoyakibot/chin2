@@ -31,7 +31,8 @@ router.get('/mock', (req: Request, res: Response) => {
   res.status(200).json(sampleGameData);
 });
 
-router.get('/', async (req: Request, res: Response) => {
+router.get('', async (req: Request, res: Response) => {
+  console.log("get");
   try {
     // Mongooseを使って全てのgamesを取得
     const games = await Game.find({});
@@ -58,7 +59,8 @@ router.get('/:quizId/image', async (req: Request, res: Response) => {
   }
 });
 
-router.post('/', async (req: Request, res: Response) => {
+router.post('', async (req: Request, res: Response) => {
+  console.log(`gameRoutes`);
   try {
     // JSONリクエストボディからデータを取得
     const { quizName, selectedImage, thumbnail, stickerImage, updDate, quizInfo } = req.body;
@@ -77,7 +79,7 @@ router.post('/', async (req: Request, res: Response) => {
   }
 });
 
-router.put('/', async (req: Request, res: Response) => {
+router.put('', async (req: Request, res: Response) => {
   try {
     const { quizId, quizName, selectedImage, thumbnail, stickerImage, updDate, quizInfo } = req.body;
     if (!quizId) {
@@ -103,7 +105,5 @@ router.put('/', async (req: Request, res: Response) => {
     res.status(500).json({ error: 'Internal server error' });
   }
 });
-
-
 
 export default router;
