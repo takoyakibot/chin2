@@ -77,13 +77,18 @@ const QuizCreatePage = () => {
     if (imageFile) {
       // サイズ上限を設定
       const maxSize = maxK * 1024;
+      const currentSize = imageFile.size;
 
       const reader = new FileReader();
       reader.onload = async (event) => {
         const base64Image = event.target.result;
     
         try {
-          const resizedBase64 = await resizeImageToMaxBytes(base64Image, maxSize);
+          var resizedBase64 = base64Image
+          if (currentSize > maxSize) {
+            resizedBase64 = await resizeImageToMaxBytes(base64Image, maxSize);
+            alert("画像が大きすぎるのでリサイズしました。");
+          }
           setSelectedImage(resizedBase64);
         } catch (error) {
           console.error("画像のリサイズに失敗:", error);
