@@ -25,9 +25,9 @@ const QuizCreatePage = () => {
   const sessionLoad = async () => {
     const preParseData = sessionStorage.getItem('savedData');
     if (preParseData) {
-      const { quizId, quizName, selectedImage, stickerImage, quizInfo } = JSON.parse(preParseData);
-      if (quizId) {
-        setQuizId(quizId);
+      const { quizId: tmpQuizId, quizName, selectedImage, stickerImage, quizInfo } = JSON.parse(preParseData);
+      if (tmpQuizId) {
+        setQuizId(tmpQuizId);
       }
       if (quizName) {
         setQuizName(quizName);
@@ -37,11 +37,15 @@ const QuizCreatePage = () => {
         setSelectedImage(selectedImage);
       } else {
         // selectedImageが存在しない場合、APIを叩いて画像を取得
-        const encodedId = encodeURIComponent(quizId);
-        const response = await axios.get(`http://localhost:3000/api/games/${encodedId}/image`);
-        const data = await response.json();
-        const base64Image = data.base64Image; // APIのレスポンスからbase64形式の画像を取得
-        setSelectedImage(base64Image);
+        const encodedId = encodeURIComponent(tmpQuizId);
+        try {
+          const response = await axios.get(`http://localhost:3000/api/games/${encodedId}/image`);
+          const data = await response.json();
+          const base64Image = data.base64Image; // APIのレスポンスからbase64形式の画像を取得
+          setSelectedImage(base64Image);
+        } catch (err) {
+          console.log(err);
+        }
       }
       if (stickerImage) {
         setStickerImage(stickerImage);
