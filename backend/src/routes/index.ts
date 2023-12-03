@@ -2,8 +2,7 @@
 import { Router } from 'express';
 import { connectDB } from '../config/db';
 import gameRoutes from './gameRoutes';
-// import chatRoutes from './chatRoutes';
-// import authRoutes from './authRoutes';
+import authRoutes from './authRoutes';
 
 const router = Router();
 
@@ -11,7 +10,6 @@ const router = Router();
 connectDB();
 
 router.use('/games', gameRoutes);
-// router.use('/chats', chatRoutes);
-// router.use('/auth', authRoutes);
+router.use('/auth', authRoutes);
 
 export default router;
