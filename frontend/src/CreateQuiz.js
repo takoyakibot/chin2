@@ -1,36 +1,51 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
+import { resizeImageToMaxBytes } from './utils/imageUtils';
+import axios from 'axios';
 import './style.css';
 
 const QuizCreatePage = () => {
+  const [quizId, setQuizId] = useState(''); // クイズのIDを保持するステート
   const [quizName, setQuizName] = useState(''); // クイズの名前を保持するステート
   const [selectedImage, setSelectedImage] = useState(null);
-  const [thumbnail, setThumbnail] = useState(null); // サムネイルを保存するステート
   const [stickerImage, setStickerImage] = useState(null);
   const [quizInfo, setQuizInfo] = useState([]); // フセンの情報とクイズの回答を保持するステート
   const [showRectangle, setShowRectangle] = useState(false);
   const [rectanglePosition, setRectanglePosition] = useState({ x: 0, y: 0 });
   const [saveButtonDisabled, setSaveButtonDisabled] = useState(true); // 保存ボタンの非アクティブ状態を管理するステート
   const maxK = 200;
-  const centering = 50
+  const centering = 50;
 
   // ページロード時にセッションストレージから保存された画像パス情報とフセン情報を取得
   useEffect(() => {
-    sessionLoad();
+    (async () => {
+      await sessionLoad();
+    })();
   }, []);
 
-  const sessionLoad = () => {
+  const sessionLoad = async () => {
     const preParseData = sessionStorage.getItem('savedData');
     if (preParseData) {
-      const { quizName, selectedImage, thumbnail, stickerImage, quizInfo } = JSON.parse(preParseData);
+      const { quizId: tmpQuizId, quizName, selectedImage, stickerImage, quizInfo } = JSON.parse(preParseData);
+      if (tmpQuizId) {
+        setQuizId(tmpQuizId);
+      }
       if (quizName) {
         setQuizName(quizName);
         setSaveButtonDisabled(quizName.trim() === '');
       }
       if (selectedImage) {
         setSelectedImage(selectedImage);
-      }
-      if (thumbnail) {
-        setThumbnail(thumbnail);
+      } else {
+        // selectedImageが存在しない場合、APIを叩いて画像を取得
+        const encodedId = encodeURIComponent(tmpQuizId);
+        try {
+          const response = await axios.get(`http://localhost:3000/api/games/${encodedId}/image`);
+          const data = await response.json();
+          const base64Image = data.base64Image; // APIのレスポンスからbase64形式の画像を取得
+          setSelectedImage(base64Image);
+        } catch (err) {
+          console.log(err);
+        }
       }
       if (stickerImage) {
         setStickerImage(stickerImage);
@@ -44,14 +59,14 @@ const QuizCreatePage = () => {
   useEffect(() => {
     sessionStorage.setItem('savedData', JSON.stringify(
       {
+        quizId: quizId,
         quizName: quizName,
         selectedImage: selectedImage,
-        thumbnail: thumbnail,
         stickerImage: stickerImage,
         quizInfo: quizInfo
       }
     ));
-  }, [quizName, selectedImage, thumbnail, stickerImage, quizInfo]);
+  }, [quizId, quizName, selectedImage, stickerImage, quizInfo]);
 
   // テキストボックスの値が変更されたときに実行される関数
   const handleQuizNameChange = (event) => {
@@ -60,49 +75,38 @@ const QuizCreatePage = () => {
     setSaveButtonDisabled(value.trim() === ''); // テキストボックスが空欄でない場合、保存ボタンと読込ボタンを有効にする
   };
   
-  const handleImageSelect = (event) => {
+  const handleImageSelect = async (event) => {
     const imageFile = event.target.files[0];
   
     if (imageFile) {
       // サイズ上限を設定
       const maxSize = maxK * 1024;
-  
-      // ファイルサイズが上限を超えているかチェック
-      if (imageFile.size > maxSize) {
-        alert('付箋のサイズは一旦'+maxK+'KB以下である必要があります。');
-        return;
-      }
-      const reader = new FileReader();
-      reader.onloadend = function () {
-        const base64Image = reader.result;
-        setSelectedImage(base64Image);
+      const currentSize = imageFile.size;
 
-        // サムネイル作成
-        const imgElement = document.createElement('img');
-        imgElement.src = reader.result;
-        
-        const canvas = document.createElement('canvas');
-        const ctx = canvas.getContext('2d');
-        imgElement.onload = () => {
-          // 長辺を設定する
-          const pnt = 10;
-          if (imgElement.width > imgElement.height) {
-            canvas.width = pnt;
-            canvas.height = imgElement.height * (pnt / imgElement.width);
-          } else {
-            canvas.height = pnt;
-            canvas.width = imgElement.width * (pnt / imgElement.height);
+      const reader = new FileReader();
+      reader.onload = async (event) => {
+        const base64Image = event.target.result;
+    
+        try {
+          var resizedBase64 = base64Image
+          if (currentSize > maxSize) {
+            resizedBase64 = await resizeImageToMaxBytes(base64Image, maxSize);
+            alert("画像が大きすぎるのでリサイズしました。");
           }
-          ctx.drawImage(imgElement, 0, 0, canvas.width, canvas.height);
-          
-          // サムネイルをBase64に変換
-          setThumbnail(canvas.toDataURL());
-        };
+          setSelectedImage(resizedBase64);
+        } catch (error) {
+          console.error("画像のリサイズに失敗:", error);
+        }
       };
+
+      reader.onerror = (error) => {
+        console.error("ファイルの読み込みに失敗:", error);
+      };
+
       reader.readAsDataURL(imageFile);
     }
   };
-
+  
   const handleStickerSelect = (event) => {
     const imageFile = event.target.files[0];
   
@@ -124,6 +128,31 @@ const QuizCreatePage = () => {
     }
   };
 
+  const createThumbnail = (base64Image) => {
+    return new Promise((resolve, reject) => {
+      const imgElement = document.createElement('img');
+      imgElement.src = base64Image;
+      
+      const canvas = document.createElement('canvas');
+      const ctx = canvas.getContext('2d');
+      imgElement.onload = () => {
+        // 長辺を設定する
+        const pnt = 10;
+        if (imgElement.width > imgElement.height) {
+          canvas.width = pnt;
+          canvas.height = imgElement.height * (pnt / imgElement.width);
+        } else {
+          canvas.height = pnt;
+          canvas.width = imgElement.width * (pnt / imgElement.height);
+        }
+        ctx.drawImage(imgElement, 0, 0, canvas.width, canvas.height);
+        
+        // サムネイルをBase64に変換
+        resolve(canvas.toDataURL());  // 処理が終わったらPromiseを解決する
+      };
+    });
+  };
+
   const handleImageClick = (event) => {
     const rect = event.target.getBoundingClientRect();
     const x = event.clientX - rect.left - centering;
@@ -133,7 +162,7 @@ const QuizCreatePage = () => {
     setShowRectangle(true);
   };
 
-  const handleAddRectangle = (e) => {
+  const handleAddRectangle = useCallback((e) => {
     if (!showRectangle || (e.key && e.key !== 'Enter')) {
       return;
     }
@@ -146,7 +175,7 @@ const QuizCreatePage = () => {
     ];
     setQuizInfo(updatedQuizInfo);
     setShowRectangle(false); // 仮フセンを追加したら非表示にする
-  };
+  });
 
   // Enterキーのイベントハンドラを設定
   useEffect(() => {
@@ -154,11 +183,11 @@ const QuizCreatePage = () => {
     return () => {
       document.removeEventListener('keydown', handleAddRectangle);
     };
-  }, [rectanglePosition, quizInfo]);
+  }, [rectanglePosition, quizInfo, handleAddRectangle]);
 
   const handleRemoveRectangle = (index) => {
     // 削除ボタンを押す前に警告を表示
-    const confirmed = window.confirm('削除しますか？（番号がずれる場合があるので注意してください）');
+    const confirmed = window.confirm('削除しますか？');
     if (confirmed) {
       const updatedQuizInfo = quizInfo.filter((_, i) => i !== index);
       setQuizInfo(updatedQuizInfo);
@@ -176,56 +205,44 @@ const QuizCreatePage = () => {
   };
 
   // 保存ボタンがクリックされたときに実行される関数
-  const handleSaveQuiz = () => {
-    if (quizName.trim() === '') return; // テキストボックスが空欄の場合は何もしない
+  const handleSaveQuiz = async () => {  // 非同期処理なのでasyncを追加
+    if (quizName.trim() === '') return;
 
-    // クイズ名が一致するクイズ情報を検索する
-    const savedData = JSON.parse(localStorage.getItem('quizInfo')) || [];
-    const foundQuiz = savedData.find((info) => info.quizName === quizName);
+    // サムネイル作成はこちらで呼び出す
+    const thumbnail = await createThumbnail(selectedImage);  // 非同期処理なのでawaitを使う
 
-    var updDate = new Date();
-    let newQuizInfo = [];
-    if (foundQuiz) {
-      const confirmed = window.confirm('すでに存在するクイズ名です。上書き保存しますか？');
-      if (!confirmed) return; // キャンセルされた場合は何もしない
+    // クイズの新しいデータオブジェクトを作成
+    const newQuizData = {
+      quizId,
+      quizName,
+      selectedImage,
+      thumbnail,
+      stickerImage,
+      updDate: new Date(),
+      quizInfo
+    };
 
-      // クイズ名が存在する場合、対応するクイズ情報を上書きする
-      newQuizInfo = savedData.map((info) =>
-        info.quizName === quizName
-          ? { quizName, selectedImage, thumbnail, stickerImage, updDate, quizInfo: quizInfo }
-          : info
-      );
-    } else {
-      // クイズ名が存在しない場合、新たにクイズ情報を追加する
-      newQuizInfo = [...savedData, { quizName, selectedImage, thumbnail, stickerImage, updDate, quizInfo: quizInfo }];
-    }
+    console.log(newQuizData);
 
-    localStorage.setItem('quizInfo', JSON.stringify(newQuizInfo));
+    try {
+      // クイズデータを保存
+      // idが存在すれば更新、なければ新規作成
+      var response;
+      if (quizId === '') {
+        response = await axios.post('http://localhost:3000/api/games', newQuizData);
+      } else {
+        response = await axios.put('http://localhost:3000/api/games', newQuizData);
+      }
 
-    // 保存したよメッセージ
-    alert('クイズ情報を保存しました。');
-  };
-
-  // 読込ボタンがクリックされたときに実行される関数
-  const handleLoadQuiz = () => {
-    if (quizName.trim() === '') return; // テキストボックスが空欄の場合は何もしない
-
-    // クイズ名が一致するクイズ情報を検索する
-    const savedData = JSON.parse(localStorage.getItem('quizInfo')) || [];
-    const foundData = savedData.find((info) => info.quizName === quizName);
-
-    if (foundData) {
-      // クイズ情報が見つかった場合、
-      const confirmed = window.confirm('現在の状態を破棄して、' + quizName + 'の情報を読み込みますか？');
-      if (!confirmed) return; // キャンセルされた場合は何もしない
-
-      // セッションに埋め込んでロード
-      sessionStorage.setItem('savedData', JSON.stringify(foundData));
-      sessionLoad();
-
-      alert('クイズ情報を読み込みました。');
-    } else {
-      alert('指定されたクイズ名の情報が見つかりません。');
+      if (response.status === 200) {
+        alert('クイズ情報を保存しました。');
+        setQuizId(response.data.quizId);
+      } else {
+        alert('何らかの問題が発生しました。' + response);
+      }
+    } catch (error) {
+      console.error('エラーが発生:', error);
+      alert('クイズの保存に失敗しました。');
     }
   };
   
@@ -281,10 +298,10 @@ const QuizCreatePage = () => {
                 <input type="file" id="filename" onChange={handleImageSelect} accept="image/*" />
               </label>
             </div>
-            {/* 付箋選択ボタン */}
+            {/* フセン選択ボタン */}
             <div className="m-2">
               <label htmlFor="stickerfile" className="browse_btn">
-                付箋を選択
+                フセンを選択
                 <input type="file" id="stickerfile" onChange={handleStickerSelect} accept="image/*" />
               </label>
             </div>
@@ -344,24 +361,18 @@ const QuizCreatePage = () => {
           <div className="col-12">
             <div className="row footer-row">
               {/* テキストボックス */}
-              <div className="col col-6">
+              <div className="col col-8">
                 <input
                   type="text" className="quiz-name-input"
-                  placeholder="クイズ名を入力"
+                  placeholder="タイトル"
                   value={quizName}
                   onChange={handleQuizNameChange}
                 />
               </div>
               {/* 保存ボタン */}
-              <div className="col col-3">
+              <div className="col col-4">
                 <button disabled={saveButtonDisabled} className="btn btn-info" onClick={handleSaveQuiz}>
                   保存
-                </button>
-              </div>
-              {/* 読込ボタン */}
-              <div className="col col-3">
-                <button disabled={saveButtonDisabled} className="btn btn-success" onClick={handleLoadQuiz}>
-                  読込
                 </button>
               </div>
             </div>

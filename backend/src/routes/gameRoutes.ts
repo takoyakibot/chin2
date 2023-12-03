@@ -31,12 +31,75 @@ router.get('/mock', (req: Request, res: Response) => {
   res.status(200).json(sampleGameData);
 });
 
-router.get('/', async (req: Request, res: Response) => {
+router.get('', async (req: Request, res: Response) => {
+  console.log("get");
   try {
     // Mongooseを使って全てのgamesを取得
     const games = await Game.find({});
     console.log("ok");
     res.json(games);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+router.get('/:quizId/image', async (req: Request, res: Response) => {
+  try {
+    const { quizId } = req.params;
+    const game = await Game.findById(quizId);
+    if (!game || !game.quizImage) {
+      return res.status(404).json({ error: 'Game or image not found' });
+    }
+    const base64Image = game.quizImage;
+    res.json({ base64Image });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+router.post('', async (req: Request, res: Response) => {
+  console.log(`gameRoutes`);
+  try {
+    // JSONリクエストボディからデータを取得
+    const { quizName, selectedImage, thumbnail, stickerImage, updDate, quizInfo } = req.body;
+
+    // 新しいGameインスタンスを作成
+    const newGame = new Game({ quizName, selectedImage, thumbnail, stickerImage, updDate, quizInfo });
+
+    // 保存
+    await newGame.save();
+
+    // 保存が成功したら、作成されたドキュメントをレスポンスとして返す
+    res.status(201).json({ quizId: newGame._id });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+router.put('', async (req: Request, res: Response) => {
+  try {
+    const { quizId, quizName, selectedImage, thumbnail, stickerImage, updDate, quizInfo } = req.body;
+    if (!quizId) {
+      res.status(400).json({ error: 'quizId is required' });
+      return;
+    }
+
+    // findByIdAndUpdateメソッドでIDに基づいてデータを更新
+    const updatedGame = await Game.findByIdAndUpdate(
+      quizId,
+      { quizName, selectedImage, thumbnail, stickerImage, updDate, quizInfo },
+      { new: true } // これにより、更新後のドキュメントが返される
+    );
+
+    if (!updatedGame) {
+      res.status(404).json({ error: 'Game not found' });
+      return;
+    }
+
+    res.status(200).json({ quizId: updatedGame._id});
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: 'Internal server error' });
